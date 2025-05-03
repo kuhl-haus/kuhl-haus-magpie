@@ -4,8 +4,6 @@ WORKDIR /app
 
 COPY . /app/
 
-RUN apt-get update && apt-get install -y netcat
-
 # Install requirements
 RUN pip install -r requirements.txt
 
