@@ -6,8 +6,8 @@ The following table indicates which versions of the project are currently receiv
 
 | Version | Supported          | End-of-Support |
 | ------- | ------------------ | -------------- |
-| 0.2.x   | :white_check_mark: | TBD - 0.x.x versions are Beta versions and will not be supported after the 1.x.x release. |
-| < 0.2.0 | :x:                | Proof-of-concept - not supported |
+| 1.x.x   | :white_check_mark: | TBD - 0.x.x versions will not be supported after the 1.x.x release. |
+| 0.x.x   | :x: | 0.x.x versions are beta and proof-of-concept versions.  Support will be provided on a case-by-case basis and only for the latest version. |
 
 We generally support:
 - The most recent major version with with its latest minor release.
