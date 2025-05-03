@@ -1,0 +1,45 @@
+{% extends 'endpoints/base.html' %}
+
+{% block title %}Delete Endpoint{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-danger text-white">
+        <h2>Delete Endpoint</h2>
+    </div>
+    <div class="card-body">
+        <p class="lead">Are you sure you want to delete the endpoint "{{ endpoint.mnemonic }}"?</p>
+
+        <div class="alert alert-warning">
+            <h4 class="alert-heading">Warning!</h4>
+            <p>This action cannot be undone. All data associated with this endpoint will be permanently deleted.</p>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Endpoint Details</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Mnemonic:</dt>
+                    <dd class="col-sm-9">{{ endpoint.mnemonic }}</dd>
+
+                    <dt class="col-sm-3">Hostname:</dt>
+                    <dd class="col-sm-9">{{ endpoint.hostname }}</dd>
+
+                    <dt class="col-sm-3">URL:</dt>
+                    <dd class="col-sm-9">{{ endpoint.scheme }}://{{ endpoint.hostname }}:{{ endpoint.port }}{{ endpoint.path }}</dd>
+                </dl>
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                <a href="{% url 'endpoint-detail' endpoint.pk %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

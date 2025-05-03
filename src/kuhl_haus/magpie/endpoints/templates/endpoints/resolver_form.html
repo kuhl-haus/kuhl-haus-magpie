@@ -1,0 +1,53 @@
+{% extends 'endpoints/base.html' %}
+
+{% block title %}
+    {% if form.instance.pk %}Edit DNS Resolver{% else %}New DNS Resolver{% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-header">
+            <h2>{% if form.instance.pk %}Edit DNS Resolver{% else %}New DNS Resolver{% endif %}</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.name.id_for_label }}">Name:</label>
+                            {{ form.name.errors }}
+                            <input type="text" name="{{ form.name.name }}"
+                                   value="{{ form.name.value|default:'' }}"
+                                   class="form-control {% if form.name.errors %}is-invalid{% endif %}"
+                                   id="{{ form.name.id_for_label }}" required>
+                            {% if form.name.help_text %}
+                                <small class="form-text text-muted">{{ form.name.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.ip_address.id_for_label }}">IP Address:</label>
+                            {{ form.ip_address.errors }}
+                            <input type="text" name="{{ form.ip_address.name }}"
+                                   value="{{ form.ip_address.value|default:'' }}"
+                                   class="form-control {% if form.ip_address.errors %}is-invalid{% endif %}"
+                                   id="{{ form.ip_address.id_for_label }}" required>
+                            {% if form.ip_address.help_text %}
+                                <small class="form-text text-muted">{{ form.ip_address.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <a href="{% url 'resolver-list' %}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,214 @@
+{% extends 'endpoints/base.html' %}
+
+{% block title %}
+    {% if form.instance.pk %}Edit Endpoint{% else %}New Endpoint{% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-header">
+            <h2>{% if form.instance.pk %}Edit Endpoint{% else %}New Endpoint{% endif %}</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.mnemonic.id_for_label }}">Mnemonic:</label>
+                            {{ form.mnemonic.errors }}
+                            <input type="text" name="{{ form.mnemonic.name }}"
+                                   value="{{ form.mnemonic.value|default:'' }}"
+                                   class="form-control {% if form.mnemonic.errors %}is-invalid{% endif %}"
+                                   id="{{ form.mnemonic.id_for_label }}" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.hostname.id_for_label }}">Hostname:</label>
+                            {{ form.hostname.errors }}
+                            <input type="text" name="{{ form.hostname.name }}"
+                                   value="{{ form.hostname.value|default:'' }}"
+                                   class="form-control {% if form.hostname.errors %}is-invalid{% endif %}"
+                                   id="{{ form.hostname.id_for_label }}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="{{ form.scheme.id_for_label }}">Scheme:</label>
+                            {{ form.scheme.errors }}
+                            <select name="{{ form.scheme.name }}"
+                                    class="form-control {% if form.scheme.errors %}is-invalid{% endif %}"
+                                    id="{{ form.scheme.id_for_label }}">
+                                {% for choice in form.scheme.field.choices %}
+                                    <option value="{{ choice.0 }}"
+                                            {% if form.scheme.value == choice.0 %}selected{% endif %}>
+                                        {{ choice.1 }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="{{ form.port.id_for_label }}">Port:</label>
+                            {{ form.port.errors }}
+                            <input type="number" name="{{ form.port.name }}"
+                                   value="{{ form.port.value|default:443 }}"
+                                   class="form-control {% if form.port.errors %}is-invalid{% endif %}"
+                                   id="{{ form.port.id_for_label }}">
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="{{ form.path.id_for_label }}">Path:</label>
+                            {{ form.path.errors }}
+                            <input type="text" name="{{ form.path.name }}"
+                                   value="{{ form.path.value|default:'/' }}"
+                                   class="form-control {% if form.path.errors %}is-invalid{% endif %}"
+                                   id="{{ form.path.id_for_label }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="{{ form.query.id_for_label }}">Query:</label>
+                            {{ form.query.errors }}
+                            <input type="text" name="{{ form.query.name }}"
+                                   value="{{ form.query.value|default:'' }}"
+                                   class="form-control {% if form.query.errors %}is-invalid{% endif %}"
+                                   id="{{ form.query.id_for_label }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="{{ form.fragment.id_for_label }}">Fragment:</label>
+                            {{ form.fragment.errors }}
+                            <input type="text" name="{{ form.fragment.name }}"
+                                   value="{{ form.fragment.value|default:'' }}"
+                                   class="form-control {% if form.fragment.errors %}is-invalid{% endif %}"
+                                   id="{{ form.fragment.id_for_label }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.healthy_status_code.id_for_label }}">Healthy Status Code:</label>
+                            {{ form.healthy_status_code.errors }}
+                            <input type="number" name="{{ form.healthy_status_code.name }}"
+                                   value="{{ form.healthy_status_code.value|default:200 }}"
+                                   class="form-control {% if form.healthy_status_code.errors %}is-invalid{% endif %}"
+                                   id="{{ form.healthy_status_code.id_for_label }}">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.dns_resolver_list.id_for_label }}">DNS Resolver List:</label>
+                            {{ form.dns_resolver_list.errors }}
+                            {{ form.dns_resolver_list }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.connect_timeout.id_for_label }}">Connect Timeout:</label>
+                            {{ form.connect_timeout.errors }}
+                            <input type="number" name="{{ form.connect_timeout.name }}"
+                                   value="{{ form.connect_timeout.value|default:7.0 }}"
+                                   step="0.1"
+                                   class="form-control {% if form.connect_timeout.errors %}is-invalid{% endif %}"
+                                   id="{{ form.connect_timeout.id_for_label }}">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.read_timeout.id_for_label }}">Read Timeout:</label>
+                            {{ form.read_timeout.errors }}
+                            <input type="number" name="{{ form.read_timeout.name }}"
+                                   value="{{ form.read_timeout.value|default:7.0 }}"
+                                   step="0.1"
+                                   class="form-control {% if form.read_timeout.errors %}is-invalid{% endif %}"
+                                   id="{{ form.read_timeout.id_for_label }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.status_key.id_for_label }}">Status Key:</label>
+                            {{ form.status_key.errors }}
+                            <input type="text" name="{{ form.status_key.name }}"
+                                   value="{{ form.status_key.value|default:'status' }}"
+                                   class="form-control {% if form.status_key.errors %}is-invalid{% endif %}"
+                                   id="{{ form.status_key.id_for_label }}">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.healthy_status.id_for_label }}">Healthy Status:</label>
+                            {{ form.healthy_status.errors }}
+                            <input type="text" name="{{ form.healthy_status.name }}"
+                                   value="{{ form.healthy_status.value|default:'OK' }}"
+                                   class="form-control {% if form.healthy_status.errors %}is-invalid{% endif %}"
+                                   id="{{ form.healthy_status.id_for_label }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.version_key.id_for_label }}">Version Key:</label>
+                            {{ form.version_key.errors }}
+                            <input type="text" name="{{ form.version_key.name }}"
+                                   value="{{ form.version_key.value|default:'version' }}"
+                                   class="form-control {% if form.version_key.errors %}is-invalid{% endif %}"
+                                   id="{{ form.version_key.id_for_label }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input type="checkbox" name="{{ form.json_response.name }}"
+                                  {% if form.json_response.value %}checked{% endif %}
+                                  class="form-check-input"
+                                  id="{{ form.json_response.id_for_label }}">
+                            <label class="form-check-label" for="{{ form.json_response.id_for_label }}">Expect JSON Response</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input type="checkbox" name="{{ form.ignore.name }}"
+                                  {% if form.ignore.value %}checked{% endif %}
+                                  class="form-check-input"
+                                  id="{{ form.ignore.id_for_label }}">
+                            <label class="form-check-label" for="{{ form.ignore.id_for_label }}">Ignore this endpoint</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <a href="{% url 'endpoint-list' %}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

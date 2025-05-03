@@ -1,0 +1,79 @@
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[project]
+name = "kuhl-haus-magpie"
+version = "0.1.2"
+description = "Site monitoring and synthetic transaction service"
+authors = [
+    { name = "Tom Pounders", email = "git@oldschool.engineer" },
+]
+readme = "README.md"
+requires-python = ">=3.12"
+license = {file = "LICENSE.txt"}
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python"
+]
+dependencies = [
+    "Django",
+    "djangorestframework",
+    "django-cors-headers",
+    "requests",
+    "dataclasses-json",
+    "dnspython",
+    "pyOpenSSL",
+    "importlib-metadata",
+]
+
+[project.urls]
+Homepage = "https://github.com/kuhl-haus/kuhl-haus-magpie"
+Documentation = "https://github.com/kuhl-haus/kuhl-haus-magpie/wiki"
+Source = "https://github.com/kuhl-haus/kuhl-haus-magpie.git"
+Changelog = "https://github.com/kuhl-haus/kuhl-haus-magpie/commits"
+Tracker = "https://github.com/kuhl-haus/kuhl-haus-magpie/issues"
+
+[project.optional-dependencies]
+testing = [
+    "setuptools",
+    "pdm-backend",
+    "pytest",
+    "pytest-cov",
+]
+
+# [project.scripts]
+# magpie = "kuhl_haus.magpie.api:run"
+
+[tool.setuptools]
+zip-safe = true
+include-package-data = true
+package-dir = {"" = "src"}
+packages = {find = {where = ["src"], exclude = ["tests"]}}
+
+[tool.pytest.ini_options]
+addopts = ["--verbose"]
+norecursedirs = ["dist", "build", ".tox"]
+testpaths = ["tests"]
+
+[tool.devpi.upload]
+no_vcs = 1
+formats = ["bdist_wheel"]
+
+[tool.flake8]
+max_line_length = 88
+extend_ignore = ["E203", "W503"]
+exclude = [".tox", "build", "dist", ".eggs", "docs/conf.py"]
+
+[tool.pyscaffold]
+version = "4.6"
+package = "magpie"
+extensions = ["namespace"]
+namespace = "kuhl_haus"
+
+[tool.pdm]
+distribution = true
+
+[tool.pdm.build]
+package-dir = "src"
+includes = ["src/kuhl_haus"]

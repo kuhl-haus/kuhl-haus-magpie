@@ -1,0 +1,150 @@
+{% extends 'endpoints/base.html' %}
+
+{% block title %}{{ endpoint.mnemonic }} Details{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{{ endpoint.mnemonic }}</h1>
+    <div class="btn-group">
+        <a href="{% url 'endpoint-update' endpoint.pk %}" class="btn btn-warning">Edit</a>
+        <a href="{% url 'endpoint-delete' endpoint.pk %}" class="btn btn-danger">Delete</a>
+        <a href="{% url 'endpoint-list' %}" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h3>Basic Information</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <dl>
+                    <dt>Mnemonic</dt>
+                    <dd>{{ endpoint.mnemonic }}</dd>
+
+                    <dt>Hostname</dt>
+                    <dd>{{ endpoint.hostname }}</dd>
+
+                    <dt>Full URL</dt>
+                    <dd>
+                        {{ endpoint.scheme }}://{{ endpoint.hostname }}:{{ endpoint.port }}{{ endpoint.path }}{% if endpoint.query %}?{{ endpoint.query }}{% endif %}{% if endpoint.fragment %}#{{ endpoint.fragment }}{% endif %}
+                    </dd>
+                </dl>
+            </div>
+            <div class="col-md-6">
+                <dl>
+                    <dt>Status</dt>
+                    <dd>
+                        {% if endpoint.ignore %}
+                            <span class="badge bg-secondary">Ignored</span>
+                        {% else %}
+                            <span class="badge bg-success">Active</span>
+                        {% endif %}
+                    </dd>
+
+                    <dt>Path</dt>
+                    <dd>{{ endpoint.path }}</dd>
+
+                    {% if endpoint.fragment %}
+                        <dt>Fragment</dt>
+                        <dd>{{ endpoint.fragment }}</dd>
+                    {% endif %}
+
+                    {% if endpoint.query %}
+                        <dt>Query Parameters</dt>
+                        <dt>{{ endpoint.query }}</dt>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if endpoint.dns_resolver_list %}
+<div class="card mb-4">
+    <div class="card-header">
+        <h3>DNS Resolver List</h3>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">List Name:</dt>
+            <dd class="col-sm-9">
+                <a href="{% url 'resolver-list-detail' endpoint.dns_resolver_list.pk %}">
+                    {{ endpoint.dns_resolver_list.name }}
+                </a>
+            </dd>
+
+            <dt class="col-sm-3">Resolvers:</dt>
+            <dd class="col-sm-9">
+                {% if endpoint.dns_resolver_list.resolvers.exists %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>IP Address</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for resolver in endpoint.dns_resolver_list.resolvers.all %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'resolver-detail' resolver.pk %}">
+                                                {{ resolver.name }}
+                                            </a>
+                                        </td>
+                                        <td>{{ resolver.ip_address }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <span class="text-muted">No resolvers assigned to this list</span>
+                {% endif %}
+            </dd>
+        </dl>
+    </div>
+</div>
+{% endif %}
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h3>Health Check Configuration</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <dl>
+                    <dt>Healthy Status Code</dt>
+                    <dd>{{ endpoint.healthy_status_code }}</dd>
+
+                    <dt>Connect Timeout</dt>
+                    <dd>{{ endpoint.connect_timeout }} seconds</dd>
+
+                    <dt>Read Timeout</dt>
+                    <dd>{{ endpoint.read_timeout }} seconds</dd>
+
+                    <dt>JSON Response</dt>
+                    <dd>{{ endpoint.json_response|yesno:"Yes,No" }}</dd>
+               </dl>
+            </div>
+            <div class="col-md-6">
+                <dl>
+                    {% if endpoint.json_response %}
+                        <dt>Status Key</dt>
+                        <dd>{{ endpoint.status_key }}</dd>
+
+                        <dt>Healthy Status</dt>
+                        <dd>{{ endpoint.healthy_status }}</dd>
+
+                        <dt>Version Key</dt>
+                        <dd>{{ endpoint.version_key }}</dd>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

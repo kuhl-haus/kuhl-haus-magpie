@@ -1,0 +1,70 @@
+services:
+  database:
+    image: docker.io/pgvector/pgvector:pg15
+    environment:
+      POSTGRES_DB: magpie
+      POSTGRES_USER: magpie
+      POSTGRES_PASSWORD: magpie
+    networks:
+      - magpie
+    volumes:
+      - magpie_db:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  magpie:
+    container_name: magpie
+    build:
+      context: .
+      # dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile
+    networks:
+      - magpie
+    restart: unless-stopped
+    environment:
+      # timezone inside container
+      TZ: "America/Los_Angeles"
+      LOG_LEVEL: "DEBUG"
+      DJANGO_DEBUG: "True"
+      # Database configuration
+      # DATABASE_URL: "sqlite:///app/data/django_db.sqlite3"
+      DATABASE_URL: "postgresql://magpie:magpie@database:5432/magpie"
+      POSTGRES_DB: magpie
+      POSTGRES_USER: magpie
+      POSTGRES_PASSWORD: magpie
+      POSTGRES_HOST: database
+      POSTGRES_PORT: 5432
+
+      # Django superuser
+      DJANGO_ALLOWED_HOSTS: 'localhost,magpie,127.0.0.1'
+      DJANGO_SUPERUSER_USERNAME: "admin"
+      DJANGO_SUPERUSER_EMAIL: "admin@example.com"
+      DJANGO_SUPERUSER_PASSWORD: "changeme"  # Change this in production!
+    ports:
+      - "0.0.0.0:8000:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/api/endpoints/"]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+#    volumes:
+#      - magpie_db:/app/data  # Persist to SQLite3 database instead of PostreSQL
+
+volumes:
+  magpie_db:
+
+networks:
+  magpie:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.13.0/24
+          ip_range: 172.28.13.128/25
+          gateway: 172.28.13.1

@@ -1,0 +1,63 @@
+{% extends 'endpoints/base.html' %}
+
+{% block title %}Endpoints{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Endpoints</h1>
+        <a href="{% url 'endpoint-create' %}" class="btn btn-primary">Add New Endpoint</a>
+    </div>
+
+    {% if endpoints %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Mnemonic</th>
+                        <th>Hostname</th>
+                        <th>DNS Resolver List</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for endpoint in endpoints %}
+                        <tr>
+                            <td>{{ endpoint.mnemonic }}</td>
+                            <td>{{ endpoint.hostname }}</td>
+                            <td>
+                                {% if endpoint.dns_resolver_list %}
+                                    <a href="{% url 'resolver-list-detail' endpoint.dns_resolver_list.pk %}"
+                                       class="badge bg-info text-decoration-none">
+                                        {{ endpoint.dns_resolver_list.name }}
+                                        <span class="badge bg-secondary">
+                                            {{ endpoint.dns_resolver_list.resolvers.count }} resolver(s)
+                                        </span>
+                                    </a>
+                                {% else %}
+                                    <span class="badge bg-secondary">None</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if endpoint.ignore %}
+                                    <span class="badge bg-secondary">Ignored</span>
+                                {% else %}
+                                    <span class="badge bg-success">Active</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{% url 'endpoint-detail' endpoint.pk %}" class="btn btn-sm btn-info">View</a>
+                                    <a href="{% url 'endpoint-update' endpoint.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                                    <a href="{% url 'endpoint-delete' endpoint.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">No endpoints found. Create one using the button above.</div>
+    {% endif %}
+{% endblock %}

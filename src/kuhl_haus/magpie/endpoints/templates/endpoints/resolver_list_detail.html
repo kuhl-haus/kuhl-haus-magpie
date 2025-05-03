@@ -1,0 +1,97 @@
+{% extends 'endpoints/base.html' %}
+
+{% block title %}{{ resolver_list.name }} Details{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{{ resolver_list.name }}</h1>
+    <div class="btn-group">
+        <a href="{% url 'resolver-list-update' resolver_list.pk %}" class="btn btn-warning">Edit</a>
+        <a href="{% url 'resolver-list-delete' resolver_list.pk %}" class="btn btn-danger">Delete</a>
+        <a href="{% url 'resolver-list-list' %}" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h3>Resolver List Information</h3>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Name:</dt>
+            <dd class="col-sm-9">{{ resolver_list.name }}</dd>
+
+            <dt class="col-sm-3">Number of Resolvers:</dt>
+            <dd class="col-sm-9">{{ resolver_list.resolvers.count }}</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h3>Resolvers</h3>
+    </div>
+    <div class="card-body">
+        {% if resolver_list.resolvers.exists %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>IP Address</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for resolver in resolver_list.resolvers.all %}
+                            <tr>
+                                <td>{{ resolver.name }}</td>
+                                <td>{{ resolver.ip_address }}</td>
+                                <td>
+                                    <a href="{% url 'resolver-detail' resolver.pk %}" class="btn btn-sm btn-info">View</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted">No resolvers assigned to this list.</p>
+        {% endif %}
+    </div>
+</div>
+
+{% if resolver_list.endpoints.exists %}
+<div class="card">
+    <div class="card-header">
+        <h3>Associated Endpoints</h3>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Mnemonic</th>
+                        <th>Hostname</th>
+                        <th>URL</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for endpoint in resolver_list.endpoints.all %}
+                        <tr>
+                            <td>{{ endpoint.mnemonic }}</td>
+                            <td>{{ endpoint.hostname }}</td>
+                            <td>{{ endpoint.scheme }}://{{ endpoint.hostname }}:{{ endpoint.port }}{{ endpoint.path }}</td>
+                            <td>
+                                <a href="{% url 'endpoint-detail' endpoint.pk %}" class="btn btn-sm btn-info">View</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

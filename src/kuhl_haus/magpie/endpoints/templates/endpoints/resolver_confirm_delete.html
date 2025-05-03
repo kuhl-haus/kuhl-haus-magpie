@@ -1,0 +1,42 @@
+{% extends 'endpoints/base.html' %}
+
+{% block title %}Delete DNS Resolver{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-danger text-white">
+        <h2>Delete DNS Resolver</h2>
+    </div>
+    <div class="card-body">
+        <p class="lead">Are you sure you want to delete the DNS resolver "{{ resolver.name }}"?</p>
+
+        <div class="alert alert-warning">
+            <h4 class="alert-heading">Warning!</h4>
+            <p>This action cannot be undone. This resolver will be removed from all resolver lists that use it.</p>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Resolver Details</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Name:</dt>
+                    <dd class="col-sm-9">{{ resolver.name }}</dd>
+
+                    <dt class="col-sm-3">IP Address:</dt>
+                    <dd class="col-sm-9">{{ resolver.ip_address }}</dd>
+                </dl>
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                <a href="{% url 'resolver-detail' resolver.pk %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
