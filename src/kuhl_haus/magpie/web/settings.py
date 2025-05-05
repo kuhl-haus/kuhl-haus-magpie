@@ -71,7 +71,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'drf_yasg',
     'kuhl_haus.magpie.endpoints.apps.EndpointsConfig',
-    'rest_framework'
+    'rest_framework',
+    'django_celery_results',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -143,7 +145,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = os.environ.get('TZ') or os.environ.get('TIME_ZONE', 'UTC')
 USE_I18N = True
 USE_TZ = True
 
@@ -156,3 +158,43 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Celery Configuration Options
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html
+#
+# Broker Settings
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#broker-settings
+#
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#broker-url
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
+
+# Worker Settings
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#worker
+#
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#imports
+# A sequence of modules to import when the worker starts.
+#
+# This is used to specify the task modules to import, but also to import signal handlers and additional remote control commands, etc.
+#
+# The modules will be imported in the original order.
+CELERY_IMPORTS = []
+
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#include
+# Exact same semantics as imports, but can be used as a means to have different import categories.
+#
+# The modules in this setting are imported after the modules in imports.
+CELERY_INCLUDE = [
+    'kuhl_haus.magpie.tasks',
+    'kuhl_haus.magpie.canary_tasks.configs',
+]
+
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#conf-result-backend
+
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#conf-database-result-backend
+CELERY_RESULT_BACKEND = 'django-db'
+
+# Beat Settings
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#std-setting-beat_scheduler
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+CONFIG_API = os.environ.get("CONFIG_API")
