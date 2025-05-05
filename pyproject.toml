@@ -35,7 +35,6 @@ dependencies = [
     "psutil",
     "pyOpenSSL",
     "python-dotenv",
-    "requests",
     "uvicorn",
     "uvicorn-worker"
 ]
