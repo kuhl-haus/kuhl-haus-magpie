@@ -1,0 +1,10 @@
+ARG BASE_IMAGE=python:3.13
+FROM ${BASE_IMAGE}
+WORKDIR /app
+
+COPY . /app/
+
+# Install requirements
+RUN pip install -r requirements.txt
+
+CMD ["celery", "-A", "kuhl_haus.magpie", "flower", "--port=5555"]

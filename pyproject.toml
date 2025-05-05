@@ -4,7 +4,7 @@ build-backend = "pdm.backend"
 
 [project]
 name = "kuhl-haus-magpie"
-version = "0.1.3"
+version = "0.1.4"
 description = "Site monitoring and synthetic transaction service"
 authors = [
     { name = "Tom Pounders", email = "git@oldschool.engineer" },
@@ -17,14 +17,26 @@ classifiers = [
     "Programming Language :: Python"
 ]
 dependencies = [
+    "celery",
     "Django",
     "djangorestframework",
+    "django-celery-beat",
+    "django-celery-results",
     "django-cors-headers",
     "requests",
     "dataclasses-json",
     "dnspython",
-    "pyOpenSSL",
+    "drf-yasg",
+    "gunicorn",
     "importlib-metadata",
+    "kuhl-haus-metrics",
+    "kuhl-haus-canary",
+    "psycopg2-binary",
+    "psutil",
+    "pyOpenSSL",
+    "python-dotenv",
+    "uvicorn",
+    "uvicorn-worker"
 ]
 
 [project.urls]
