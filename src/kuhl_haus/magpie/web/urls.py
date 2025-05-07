@@ -22,6 +22,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('kuhl_haus.magpie.endpoints.urls')),
 
+    # API-only
+    path('', include('kuhl_haus.magpie.canary.urls')),
+
     # Swagger
     # drf-yasg
     path('api-<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
