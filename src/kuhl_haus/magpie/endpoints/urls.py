@@ -12,6 +12,7 @@ router.register(r'api/resolver-lists', api_views.DnsResolverListViewSet)
 urlpatterns = [
     # Endpoint URLs
     path('', views.EndpointListView.as_view(), name='endpoint-list'),
+    path('endpoints/', views.EndpointListView.as_view(), name='endpoint-list'),
     path('endpoint/<int:pk>/', views.EndpointDetailView.as_view(), name='endpoint-detail'),
     path('endpoint/new/', views.EndpointCreateView.as_view(), name='endpoint-create'),
     path('endpoint/<int:pk>/edit/', views.EndpointUpdateView.as_view(), name='endpoint-update'),

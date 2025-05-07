@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'drf_yasg',
+    'kuhl_haus.magpie.canary.apps.CanaryConfig',
     'kuhl_haus.magpie.endpoints.apps.EndpointsConfig',
     'rest_framework',
     'django_celery_results',
@@ -105,27 +106,29 @@ TEMPLATES = [
 ]
 
 # Database
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'django_db.sqlite3',
-#     }
-# }
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB', 'magpie'),
-        'USER': os.environ.get('POSTGRES_USER', 'magpie'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'magpie'),
-        'HOST': os.environ.get('POSTGRES_HOST', 'database'),
-        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
-        'OPTIONS': {
-            'connect_timeout': 5,
-        },
-        'CONN_MAX_AGE': 600,  # Keep connections alive for 10 minutes
+db_host = os.environ.get('POSTGRES_HOST')
+if db_host:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('POSTGRES_DB', 'magpie'),
+            'USER': os.environ.get('POSTGRES_USER', 'magpie'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'magpie'),
+            'HOST': db_host,
+            'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+            'OPTIONS': {
+                'connect_timeout': 5,
+            },
+            'CONN_MAX_AGE': 600,  # Keep connections alive for 10 minutes
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'django_db.sqlite3',
+        }
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
