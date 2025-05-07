@@ -17,31 +17,38 @@ logger = logging.getLogger(__name__)
 @app.task
 def canary(carbon_client_name: str = "default", application_name: str = "canary"):
     try:
-        carbon_configs = CarbonClientConfig.objects.filter(name__iexact=carbon_client_name)
-        carbon_config = list(carbon_configs).pop()
+        carbon_config = CarbonClientConfig.objects.get(name__iexact=carbon_client_name)
     except ObjectDoesNotExist:
         return {
             "status": "failed",
             "results": {
-                "message": "Carbon client configuration not found in database"
+                "message": f"Carbon client configuration {carbon_client_name} not found in database"
             }
         }
 
-    # Get the ScriptConfig from Django ORM by 'name'
     try:
-        script_configs = ScriptConfig.objects.filter(application_name__iexact=application_name)
-        script_config = list(script_configs).pop()
+        script_config = ScriptConfig.objects.get(application_name__iexact=application_name)
     except ObjectDoesNotExist:
         return {
             "status": "failed",
             "results": {
-                "message": "canary configuration not found in database"
+                "message": f"{application_name} configuration not found in database"
             }
         }
     result_metadata = {
-        "application_name": script_config.application_name,
-        "script_config": script_config.to_dict(),
-        "carbon_config": carbon_config.to_dict(),
+        "script_config": {
+            "name": script_config.name,
+            "application_name": script_config.application_name,
+            "log_level": script_config.log_level,
+            "namespace_root": script_config.namespace_root,
+            "delay": script_config.delay,
+            "count": script_config.count,
+        },
+        "carbon_config": {
+            "name": carbon_config.name,
+            "server_ip": carbon_config.server_ip,
+            "pickle_port": carbon_config.pickle_port,
+        },
     }
     try:
         graphite_logger = GraphiteLogger(GraphiteLoggerOptions(
