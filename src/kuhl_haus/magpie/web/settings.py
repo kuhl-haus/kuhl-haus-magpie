@@ -100,6 +100,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'kuhl_haus.magpie.endpoints.context_processors.flower_domain'
             ],
         },
     },
@@ -201,3 +202,22 @@ CELERY_RESULT_BACKEND = 'django-db'
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 CONFIG_API = os.environ.get("CONFIG_API")
+
+# https://docs.djangoproject.com/en/5.1/ref/settings/#data-upload-max-number-fields
+# The maximum number of parameters that may be received via GET or POST before
+# a SuspiciousOperation (TooManyFields) is raised. You can set this to None to
+# disable the check. Applications that are expected to receive an unusually
+# large number of form fields should tune this setting.
+#
+# The number of request parameters is correlated to the amount of time needed
+# to process the request and populate the GET and POST dictionaries. Large
+# requests could be used as a denial-of-service attack vector if left unchecked.
+# Since web servers don’t typically perform deep request inspection, it’s not
+# possible to perform a similar check at that level.
+#
+# Default: 1000
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
+
+# Flower configs
+
+FLOWER_DOMAIN = os.environ.get("FLOWER_DOMAIN", "localhost:5555")
