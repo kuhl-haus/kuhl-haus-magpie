@@ -1,150 +1,160 @@
 {% extends 'endpoints/base.html' %}
 
-{% block title %}{{ endpoint.mnemonic }} Details{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>{{ endpoint.mnemonic }}</h1>
-    <div class="btn-group">
-        <a href="{% url 'endpoint-update' endpoint.pk %}" class="btn btn-warning">Edit</a>
-        <a href="{% url 'endpoint-delete' endpoint.pk %}" class="btn btn-danger">Delete</a>
+<div class="container">
+    <h2>{{ object.mnemonic }} - {{ object.hostname }}</h2>
+
+    <div class="mb-3">
         <a href="{% url 'endpoint-list' %}" class="btn btn-secondary">Back to List</a>
+        <a href="{% url 'endpoint-update' object.pk %}" class="btn btn-primary">Edit</a>
+        <a href="{% url 'endpoint-delete' object.pk %}" class="btn btn-danger">Delete</a>
     </div>
-</div>
 
-<div class="card mb-4">
-    <div class="card-header">
-        <h3>Basic Information</h3>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-6">
-                <dl>
-                    <dt>Mnemonic</dt>
-                    <dd>{{ endpoint.mnemonic }}</dd>
-
-                    <dt>Hostname</dt>
-                    <dd>{{ endpoint.hostname }}</dd>
-
-                    <dt>Full URL</dt>
-                    <dd>
-                        {{ endpoint.scheme }}://{{ endpoint.hostname }}:{{ endpoint.port }}{{ endpoint.path }}{% if endpoint.query %}?{{ endpoint.query }}{% endif %}{% if endpoint.fragment %}#{{ endpoint.fragment }}{% endif %}
-                    </dd>
-                </dl>
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Basic Information</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <strong>Mnemonic:</strong> {{ object.mnemonic }}
+                </div>
+                <div class="col-md-6 mb-2">
+                    <strong>Hostname:</strong> {{ object.hostname }}
+                </div>
             </div>
-            <div class="col-md-6">
-                <dl>
-                    <dt>Status</dt>
-                    <dd>
-                        {% if endpoint.ignore %}
-                            <span class="badge bg-secondary">Ignored</span>
-                        {% else %}
-                            <span class="badge bg-success">Active</span>
-                        {% endif %}
-                    </dd>
+            <div class="row">
+                <div class="col-md-3 mb-2">
+                    <strong>Scheme:</strong> {{ object.get_scheme_display }}
+                </div>
+                <div class="col-md-3 mb-2">
+                    <strong>Port:</strong> {{ object.port }}
+                </div>
+                <div class="col-md-3 mb-2">
+                    <strong>Path:</strong> {{ object.path }}
+                </div>
+                <div class="col-md-3 mb-2">
+                    <strong>Verb:</strong> {{ object.get_verb_display }}
+                </div>
+            </div>
+        </div>
+    </div>
 
-                    <dt>Path</dt>
-                    <dd>{{ endpoint.path }}</dd>
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Query Parameters</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <strong>Query:</strong> {{ object.query|default:"None" }}
+                </div>
+                <div class="col-md-6 mb-2">
+                    <strong>Fragment:</strong> {{ object.fragment|default:"None" }}
+                </div>
+            </div>
+        </div>
+    </div>
 
-                    {% if endpoint.fragment %}
-                        <dt>Fragment</dt>
-                        <dd>{{ endpoint.fragment }}</dd>
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Post Parameters</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 mb-2">
+                    <strong>Body:</strong>
+                    {% if object.body %}
+                        <pre class="mt-2"><code>{{ object.body|pprint }}</code></pre>
+                    {% else %}
+                        None
                     {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 
-                    {% if endpoint.query %}
-                        <dt>Query Parameters</dt>
-                        <dt>{{ endpoint.query }}</dt>
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Response Settings</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <strong>Healthy Status Code:</strong> {{ object.healthy_status_code }}
+                </div>
+                <div class="col-md-6 mb-2">
+                    <strong>Response Format:</strong> {{ object.get_response_format_display }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Health Check Configuration</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 mb-2">
+                    <strong>Ignore:</strong> {% if object.ignore %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-danger">No</span>{% endif %}
+                </div>
+                <div class="col-md-3 mb-2">
+                    <strong>TLS Check:</strong> {% if object.tls_check %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-danger">No</span>{% endif %}
+                </div>
+                <div class="col-md-3 mb-2">
+                    <strong>DNS Check:</strong> {% if object.dns_check %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-danger">No</span>{% endif %}
+                </div>
+                <div class="col-md-3 mb-2">
+                    <strong>Health Check:</strong> {% if object.health_check %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-danger">No</span>{% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-2">
+                    <strong>Status Key:</strong> {{ object.status_key }}
+                </div>
+                <div class="col-md-4 mb-2">
+                    <strong>Healthy Status:</strong> {{ object.healthy_status }}
+                </div>
+                <div class="col-md-4 mb-2">
+                    <strong>Version Key:</strong> {{ object.version_key }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Timeout Settings</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <strong>Connect Timeout:</strong> {{ object.connect_timeout }} seconds
+                </div>
+                <div class="col-md-6 mb-2">
+                    <strong>Read Timeout:</strong> {{ object.read_timeout }} seconds
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Additional Settings</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 mb-2">
+                    <strong>DNS Resolver List:</strong>
+                    {% if object.dns_resolver_list %}
+                        {{ object.dns_resolver_list.name }}
+                    {% else %}
+                        None
                     {% endif %}
-                </dl>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
-{% if endpoint.dns_resolver_list %}
-<div class="card mb-4">
-    <div class="card-header">
-        <h3>DNS Resolver List</h3>
-    </div>
-    <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-3">List Name:</dt>
-            <dd class="col-sm-9">
-                <a href="{% url 'resolver-list-detail' endpoint.dns_resolver_list.pk %}">
-                    {{ endpoint.dns_resolver_list.name }}
-                </a>
-            </dd>
-
-            <dt class="col-sm-3">Resolvers:</dt>
-            <dd class="col-sm-9">
-                {% if endpoint.dns_resolver_list.resolvers.exists %}
-                    <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>IP Address</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for resolver in endpoint.dns_resolver_list.resolvers.all %}
-                                    <tr>
-                                        <td>
-                                            <a href="{% url 'resolver-detail' resolver.pk %}">
-                                                {{ resolver.name }}
-                                            </a>
-                                        </td>
-                                        <td>{{ resolver.ip_address }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <span class="text-muted">No resolvers assigned to this list</span>
-                {% endif %}
-            </dd>
-        </dl>
-    </div>
-</div>
-{% endif %}
-
-<div class="card mb-4">
-    <div class="card-header">
-        <h3>Health Check Configuration</h3>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-6">
-                <dl>
-                    <dt>Healthy Status Code</dt>
-                    <dd>{{ endpoint.healthy_status_code }}</dd>
-
-                    <dt>Connect Timeout</dt>
-                    <dd>{{ endpoint.connect_timeout }} seconds</dd>
-
-                    <dt>Read Timeout</dt>
-                    <dd>{{ endpoint.read_timeout }} seconds</dd>
-
-                    <dt>JSON Response</dt>
-                    <dd>{{ endpoint.json_response|yesno:"Yes,No" }}</dd>
-               </dl>
-            </div>
-            <div class="col-md-6">
-                <dl>
-                    {% if endpoint.json_response %}
-                        <dt>Status Key</dt>
-                        <dd>{{ endpoint.status_key }}</dd>
-
-                        <dt>Healthy Status</dt>
-                        <dd>{{ endpoint.healthy_status }}</dd>
-
-                        <dt>Version Key</dt>
-                        <dd>{{ endpoint.version_key }}</dd>
-                    {% endif %}
-                </dl>
-            </div>
-        </div>
-    </div>
-</div>
-
 {% endblock %}

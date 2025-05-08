@@ -15,23 +15,32 @@ class DnsResolverListAdmin(admin.ModelAdmin):
 
 @admin.register(EndpointModel)
 class EndpointModelAdmin(admin.ModelAdmin):
-    list_display = ('mnemonic', 'hostname', 'scheme', 'port', 'healthy_status_code', 'ignore')
-    list_filter = ('scheme', 'json_response', 'ignore')
+    list_display = ('mnemonic', 'hostname', 'ignore', 'tls_check', 'dns_check', 'health_check',)
+    list_filter = ('mnemonic', 'hostname', 'ignore', 'tls_check', 'dns_check', 'health_check',)
     search_fields = ('mnemonic', 'hostname')
     fieldsets = (
         ('Basic Information', {
-            'fields': ('mnemonic', 'hostname', 'scheme', 'port', 'path')
+            'fields': ('mnemonic', 'hostname', 'scheme', 'port', 'path', 'verb')
         }),
         ('Query Parameters', {
             'fields': ('query', 'fragment'),
         }),
+        ('Post Parameters', {
+            'fields': ('body',),
+        }),
+        ('Response Settings', {
+            'fields': ('healthy_status_code', 'response_format',)
+        }),
         ('Health Check Configuration', {
-            'fields': ('healthy_status_code', 'json_response', 'status_key', 'healthy_status', 'version_key')
+            'fields': (
+                'ignore', 'tls_check', 'dns_check', 'health_check',
+                'status_key', 'healthy_status', 'version_key'
+            )
         }),
         ('Timeout Settings', {
             'fields': ('connect_timeout', 'read_timeout')
         }),
         ('Additional Settings', {
-            'fields': ('ignore', 'dns_resolver_list')
+            'fields': ('dns_resolver_list',)
         }),
     )

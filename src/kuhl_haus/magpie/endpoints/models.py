@@ -23,22 +23,38 @@ class EndpointModel(models.Model):
         ('http', 'HTTP'),
         ('https', 'HTTPS'),
     ]
+    VERB_CHOICES = [
+        ('GET', 'GET'),
+        ('PATCH', 'PATCH'),
+        ('POST', 'POST'),
+        ('PUT', 'PUT'),
+        ('DELETE', 'DELETE'),
+    ]
+    RESPONSE_FORMAT_CHOICES = [
+        ('json', 'json'),
+        ('text', 'text'),
+    ]
 
     mnemonic = models.CharField(max_length=255)
     hostname = models.CharField(max_length=255)
     scheme = models.CharField(max_length=10, choices=SCHEME_CHOICES, default='https')
     port = models.IntegerField(default=443, validators=[MinValueValidator(1), MaxValueValidator(65535)])
+    path = models.CharField(max_length=255, default="/")
     query = models.CharField(max_length=255, null=True, blank=True)
     fragment = models.CharField(max_length=255, null=True, blank=True)
+    verb = models.CharField(max_length=6, choices=VERB_CHOICES, default="GET")
+    body = models.JSONField(null=True, blank=True)
     healthy_status_code = models.IntegerField(default=200)
-    json_response = models.BooleanField(default=True)
+    response_format = models.CharField(max_length=16, choices=RESPONSE_FORMAT_CHOICES, default="text", null=True, blank=True)
     status_key = models.CharField(max_length=255, default="status")
     healthy_status = models.CharField(max_length=255, default="OK")
     version_key = models.CharField(max_length=255, default="version")
     connect_timeout = models.FloatField(default=7.0)
     read_timeout = models.FloatField(default=7.0)
     ignore = models.BooleanField(default=False)
-    path = models.CharField(max_length=255, default="/")
+    health_check = models.BooleanField(default=False)
+    tls_check = models.BooleanField(default=False)
+    dns_check = models.BooleanField(default=False)
     dns_resolver_list = models.ForeignKey(
         DnsResolverList,
         on_delete=models.SET_NULL,

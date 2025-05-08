@@ -32,7 +32,7 @@ def endpoint_model_data():
         'query': 'format=json',
         'fragment': 'section1',
         'healthy_status_code': 200,
-        'json_response': True,
+        'response_format': 'json',
         'status_key': 'status',
         'healthy_status': 'OK',
         'version_key': 'version',
@@ -81,7 +81,7 @@ def test_endpoint_model_default_values():
     assert sut.port == 443
     assert sut.path == '/'
     assert sut.healthy_status_code == 200
-    assert sut.json_response is True
+    assert sut.response_format == 'text'
     assert sut.status_key == 'status'
     assert sut.healthy_status == 'OK'
     assert sut.version_key == 'version'
