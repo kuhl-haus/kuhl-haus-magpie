@@ -20,7 +20,12 @@ class EndpointModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = EndpointModel
         fields = [
-            'mnemonic', 'hostname', 'scheme', 'port', 'path', 'query', 'fragment',
-            'healthy_status_code', 'json_response', 'status_key', 'healthy_status',
-            'version_key', 'connect_timeout', 'read_timeout', 'ignore'
+            'mnemonic',
+            'hostname', 'scheme', 'port',
+            'path', 'query', 'fragment',
+            'verb', 'body',
+            'healthy_status_code', 'response_format',
+            'status_key', 'healthy_status', 'version_key',
+            'connect_timeout', 'read_timeout',
+            'ignore', 'tls_check', 'dns_check', 'health_check',
         ]

@@ -17,6 +17,9 @@
                         <th>Hostname</th>
                         <th>DNS Resolver List</th>
                         <th>Status</th>
+                        <th>Health Check</th>
+                        <th>TLS Check</th>
+                        <th>DNS Check</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -43,6 +46,27 @@
                                     <span class="badge bg-secondary">Ignored</span>
                                 {% else %}
                                     <span class="badge bg-success">Active</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if endpoint.health_check %}
+                                    <span class="badge bg-success">Enabled</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Disabled</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if endpoint.tls_check %}
+                                    <span class="badge bg-success">Enabled</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Disabled</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if endpoint.dns_check %}
+                                    <span class="badge bg-success">Enabled</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Disabled</span>
                                 {% endif %}
                             </td>
                             <td>

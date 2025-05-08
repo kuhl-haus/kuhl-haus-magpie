@@ -120,7 +120,6 @@ if db_host:
             'OPTIONS': {
                 'connect_timeout': 5,
             },
-
             # https://docs.djangoproject.com/en/5.2/ref/settings/#conn-max-age
             # Default: 0
             #

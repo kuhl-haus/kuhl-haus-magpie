@@ -7,14 +7,20 @@ class EndpointModelForm(forms.ModelForm):
     class Meta:
         model = EndpointModel
         fields = [
-            'mnemonic', 'hostname', 'scheme', 'port', 'query', 'fragment',
-            'healthy_status_code', 'json_response', 'status_key', 'healthy_status',
-            'version_key', 'connect_timeout', 'read_timeout', 'ignore', 'path',
+            'mnemonic',
+            'hostname', 'scheme', 'port',
+            'path', 'query', 'fragment',
+            'verb', 'body',
+            'healthy_status_code', 'response_format',
+            'status_key', 'healthy_status', 'version_key',
+            'connect_timeout', 'read_timeout',
+            'ignore', 'tls_check', 'dns_check', 'health_check',
             'dns_resolver_list'
         ]
         widgets = {
             'connect_timeout': forms.NumberInput(attrs={'step': '0.1'}),
             'read_timeout': forms.NumberInput(attrs={'step': '0.1'}),
+            'body': forms.Textarea(attrs={'rows': 5}),
         }
 
 
