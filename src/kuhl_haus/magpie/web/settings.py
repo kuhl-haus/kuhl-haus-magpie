@@ -120,7 +120,27 @@ if db_host:
             'OPTIONS': {
                 'connect_timeout': 5,
             },
-            'CONN_MAX_AGE': 600,  # Keep connections alive for 10 minutes
+
+            # https://docs.djangoproject.com/en/5.2/ref/settings/#conn-max-age
+            # Default: 0
+            #
+            # The development server creates a new thread for each request it handles, negating the effect of
+            # persistent connections. Don’t enable them during development.
+            #
+            # The lifetime of a database connection, as an integer of seconds. Use 0 to close database connections at
+            # the end of each request — Django’s historical behavior — and None for unlimited persistent database
+            # connections.
+            'CONN_MAX_AGE': 0,
+
+            # https://docs.djangoproject.com/en/5.2/ref/settings/#conn-health-checks
+            # Default: False
+            #
+            # If set to True, existing persistent database connections will be health checked before they are
+            # reused in each request performing database access. If the health check fails, the connection will be
+            # reestablished without failing the request when the connection is no longer usable but the database
+            # server is ready to accept and serve new connections (e.g. after database server restart closing
+            # existing connections).
+            'CONN_HEALTH_CHECKS': "True",
         }
     }
 else:
