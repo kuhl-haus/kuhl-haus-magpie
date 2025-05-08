@@ -100,6 +100,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'kuhl_haus.magpie.endpoints.context_processors.flower_domain'
             ],
         },
     },
@@ -119,7 +120,26 @@ if db_host:
             'OPTIONS': {
                 'connect_timeout': 5,
             },
-            'CONN_MAX_AGE': 600,  # Keep connections alive for 10 minutes
+            # https://docs.djangoproject.com/en/5.2/ref/settings/#conn-max-age
+            # Default: 0
+            #
+            # The development server creates a new thread for each request it handles, negating the effect of
+            # persistent connections. Don’t enable them during development.
+            #
+            # The lifetime of a database connection, as an integer of seconds. Use 0 to close database connections at
+            # the end of each request — Django’s historical behavior — and None for unlimited persistent database
+            # connections.
+            'CONN_MAX_AGE': 0,
+
+            # https://docs.djangoproject.com/en/5.2/ref/settings/#conn-health-checks
+            # Default: False
+            #
+            # If set to True, existing persistent database connections will be health checked before they are
+            # reused in each request performing database access. If the health check fails, the connection will be
+            # reestablished without failing the request when the connection is no longer usable but the database
+            # server is ready to accept and serve new connections (e.g. after database server restart closing
+            # existing connections).
+            'CONN_HEALTH_CHECKS': "True",
         }
     }
 else:
@@ -201,3 +221,22 @@ CELERY_RESULT_BACKEND = 'django-db'
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 CONFIG_API = os.environ.get("CONFIG_API")
+
+# https://docs.djangoproject.com/en/5.1/ref/settings/#data-upload-max-number-fields
+# The maximum number of parameters that may be received via GET or POST before
+# a SuspiciousOperation (TooManyFields) is raised. You can set this to None to
+# disable the check. Applications that are expected to receive an unusually
+# large number of form fields should tune this setting.
+#
+# The number of request parameters is correlated to the amount of time needed
+# to process the request and populate the GET and POST dictionaries. Large
+# requests could be used as a denial-of-service attack vector if left unchecked.
+# Since web servers don’t typically perform deep request inspection, it’s not
+# possible to perform a similar check at that level.
+#
+# Default: 1000
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
+
+# Flower configs
+
+FLOWER_DOMAIN = os.environ.get("FLOWER_DOMAIN", "localhost:5555")
