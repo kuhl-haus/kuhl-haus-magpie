@@ -46,15 +46,15 @@ class EndpointModel(models.Model):
     body = models.JSONField(null=True, blank=True)
     healthy_status_code = models.IntegerField(default=200)
     response_format = models.CharField(max_length=16, choices=RESPONSE_FORMAT_CHOICES, default="text", null=True, blank=True)
-    status_key = models.CharField(max_length=255, default="status")
-    healthy_status = models.CharField(max_length=255, default="OK")
-    version_key = models.CharField(max_length=255, default="version")
+    status_key = models.CharField(max_length=255, null=True, blank=True)
+    healthy_status = models.CharField(max_length=255, null=True, blank=True)
+    version_key = models.CharField(max_length=255, null=True, blank=True)
     connect_timeout = models.FloatField(default=7.0)
     read_timeout = models.FloatField(default=7.0)
     ignore = models.BooleanField(default=False)
-    health_check = models.BooleanField(default=False)
-    tls_check = models.BooleanField(default=False)
-    dns_check = models.BooleanField(default=False)
+    health_check = models.BooleanField(default=True)
+    tls_check = models.BooleanField(default=True)
+    dns_check = models.BooleanField(default=True)
     dns_resolver_list = models.ForeignKey(
         DnsResolverList,
         on_delete=models.SET_NULL,
