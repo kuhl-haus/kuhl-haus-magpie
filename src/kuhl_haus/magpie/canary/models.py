@@ -23,6 +23,7 @@ class ScriptConfig(models.Model):
     application_name = models.CharField(max_length=255)
     log_level = models.CharField(max_length=7, choices=LOG_LEVEL_CHOICES, default='INFO')
     namespace_root = models.CharField(max_length=255)
+    metric_namespace = models.CharField(max_length=255, null=True, blank=True)
     delay = models.IntegerField(default=300, validators=[MinValueValidator(0), MaxValueValidator(86400)])
     count = models.IntegerField(default=-1, validators=[MinValueValidator(-1), MaxValueValidator(9999)])
 

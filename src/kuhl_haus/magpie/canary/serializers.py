@@ -12,5 +12,5 @@ class ScriptConfigSerializer(serializers.ModelSerializer):
     class Meta:
         model = ScriptConfig
         fields = [
-            'name', 'application_name', 'log_level', 'namespace_root', 'delay', 'count'
+            'name', 'application_name', 'log_level', 'namespace_root', 'metric_namespace', 'delay', 'count'
         ]

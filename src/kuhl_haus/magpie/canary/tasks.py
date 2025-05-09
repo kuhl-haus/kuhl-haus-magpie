@@ -57,7 +57,7 @@ def canary(carbon_client_name: str = "default", application_name: str = "canary"
             carbon_config={"server_ip": carbon_config.server_ip, "pickle_port": carbon_config.pickle_port},
             thread_pool_size=10,
             namespace_root=script_config.namespace_root,
-            metric_namespace=script_config.application_name,
+            metric_namespace=script_config.metric_namespace,
             pod_name=os.environ.get("POD_NAME"),
         ))
     except Exception as e:
