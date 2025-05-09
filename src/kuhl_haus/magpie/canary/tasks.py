@@ -41,6 +41,7 @@ def canary(carbon_client_name: str = "default", application_name: str = "canary"
             "application_name": script_config.application_name,
             "log_level": script_config.log_level,
             "namespace_root": script_config.namespace_root,
+            "metric_namespace": script_config.metric_namespace,
             "delay": script_config.delay,
             "count": script_config.count,
         },
