@@ -93,10 +93,9 @@ jobs:
               
               # Add commit hash as suffix for non-tagged builds
               COMMIT_SHORT=$(git rev-parse --short HEAD)
-              COMMIT_COUNT=$(git rev-list --count HEAD)
               
-              # Format: version-count.hash (e.g., 1.2.3-42.a1b2c3d)
-              IMAGE_TAG="${VERSION}-${COMMIT_COUNT}.${COMMIT_SHORT}"
+              # Format: version-hash (e.g., 1.2.3-a1b2c3d)
+              IMAGE_TAG="${VERSION}-${COMMIT_SHORT}"
               echo "Using version from pyproject.toml with suffix: $IMAGE_TAG"
             else
               # Fallback to latest if no tag or pyproject.toml
