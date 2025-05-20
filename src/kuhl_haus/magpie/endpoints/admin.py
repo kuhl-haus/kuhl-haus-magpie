@@ -1,4 +1,6 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin
+
 from kuhl_haus.magpie.endpoints.models import (
     EndpointModel,
     DnsResolver,
@@ -9,13 +11,13 @@ from kuhl_haus.magpie.endpoints.models import (
 
 
 @admin.register(CarbonClientConfig)
-class CarbonClientConfigAdmin(admin.ModelAdmin):
+class CarbonClientConfigAdmin(ModelAdmin):
     list_display = ('name', 'server_ip', 'pickle_port')
     search_fields = ('name', 'server_ip', 'pickle_port')
 
 
 @admin.register(ScriptConfig)
-class ScriptConfigAdmin(admin.ModelAdmin):
+class ScriptConfigAdmin(ModelAdmin):
     list_display = ('name', 'application_name', 'log_level', 'namespace_root', 'metric_namespace', 'delay', 'count')
     list_filter = ('application_name', 'log_level', 'namespace_root', 'metric_namespace', 'delay', 'count')
     search_fields = ('name', 'application_name', 'namespace_root', 'metric_namespace')
@@ -36,18 +38,18 @@ class ScriptConfigAdmin(admin.ModelAdmin):
 
 
 @admin.register(DnsResolver)
-class DnsResolverAdmin(admin.ModelAdmin):
+class DnsResolverAdmin(ModelAdmin):
     list_display = ('name', 'ip_address')
     search_fields = ('name', 'ip_address')
 
 
 @admin.register(DnsResolverList)
-class DnsResolverListAdmin(admin.ModelAdmin):
+class DnsResolverListAdmin(ModelAdmin):
     filter_horizontal = ('resolvers',)
 
 
 @admin.register(EndpointModel)
-class EndpointModelAdmin(admin.ModelAdmin):
+class EndpointModelAdmin(ModelAdmin):
     list_display = ('mnemonic', 'hostname', 'ignore', 'tls_check', 'dns_check', 'health_check',)
     list_filter = ('mnemonic', 'hostname', 'ignore', 'tls_check', 'dns_check', 'health_check',)
     search_fields = ('mnemonic', 'hostname')
