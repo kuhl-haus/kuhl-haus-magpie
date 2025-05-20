@@ -206,7 +206,10 @@ CELERY_IMPORTS = []
 # Exact same semantics as imports, but can be used as a means to have different import categories.
 #
 # The modules in this setting are imported after the modules in imports.
-CELERY_INCLUDE = []
+CELERY_INCLUDE = [
+    'kuhl_haus.magpie.tasks',
+    'kuhl_haus.magpie.canary_tasks.configs',
+]
 
 # https://docs.celeryq.dev/en/stable/userguide/configuration.html#conf-result-backend
 
