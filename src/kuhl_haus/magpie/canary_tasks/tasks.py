@@ -16,8 +16,6 @@ from kuhl_haus.magpie.canary.tasks.tls import invoke_tls_check
 from kuhl_haus.magpie.endpoints.models import EndpointModel, DnsResolver, DnsResolverList, CarbonClientConfig, ScriptConfig
 from kuhl_haus.magpie.web.celery_app import app
 
-CONFIG_API = os.environ.get("CONFIG_API")
-
 
 logger = logging.getLogger(__name__)
 
@@ -456,4 +454,3 @@ def dns_check(carbon_client_name: str = "default", application_name: str = "dns"
             exc_info=e
         )
         raise
-

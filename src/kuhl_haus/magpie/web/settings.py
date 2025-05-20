@@ -220,8 +220,6 @@ CELERY_RESULT_BACKEND = 'django-db'
 # https://docs.celeryq.dev/en/stable/userguide/configuration.html#std-setting-beat_scheduler
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
-CONFIG_API = os.environ.get("CONFIG_API")
-
 # https://docs.djangoproject.com/en/5.1/ref/settings/#data-upload-max-number-fields
 # The maximum number of parameters that may be received via GET or POST before
 # a SuspiciousOperation (TooManyFields) is raised. You can set this to None to
