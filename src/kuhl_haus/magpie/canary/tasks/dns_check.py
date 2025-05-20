@@ -1,15 +1,19 @@
 from logging import Logger
-from typing import List
 
 import dns.query
 from dns.message import make_query
 
-from kuhl_haus.magpie.endpoints.models import EndpointModel, DnsResolver
+from kuhl_haus.magpie.endpoints.models import EndpointModel, DnsResolverList
 from kuhl_haus.magpie.metrics.data.metrics import Metrics
 
 
-def query_dns(resolvers: List[DnsResolver], ep: EndpointModel, metrics: Metrics, logger: Logger):
-    for resolver in resolvers:
+def query_dns(resolvers: DnsResolverList, ep: EndpointModel, metrics: Metrics, logger: Logger):
+    if not resolvers:
+        return
+    resolver_list = resolvers.resolvers.get()
+    if not isinstance(resolver_list, list):
+        resolver_list = [resolver_list]
+    for resolver in resolver_list:
         try:
             metrics.set_counter('requests', 1)
             response: dns.message.Message = dns_query(resolver.ip_address, ep.hostname, "A", use_tcp=False)

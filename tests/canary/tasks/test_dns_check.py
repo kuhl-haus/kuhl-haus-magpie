@@ -8,7 +8,7 @@ import dns.flags
 import dns.exception
 import dns.query
 
-from kuhl_haus.magpie.endpoints.models import DnsResolver, EndpointModel
+from kuhl_haus.magpie.endpoints.models import DnsResolver, EndpointModel, DnsResolverList
 from kuhl_haus.magpie.metrics.data.metrics import Metrics
 from kuhl_haus.magpie.canary.tasks.dns_check import query_dns, dns_query
 
@@ -38,16 +38,32 @@ def mock_endpoint():
 
 
 @pytest.fixture
-def mock_resolvers():
-    resolver1 = MagicMock(spec=DnsResolver)
-    resolver1.ip_address = "192.0.2.1"
-    resolver2 = MagicMock(spec=DnsResolver)
-    resolver2.ip_address = "192.0.2.2"
-    return [resolver1, resolver2]
+def mock_resolver_list_1():
+    resolver = MagicMock(spec=DnsResolver)
+    resolver.ip_address = "192.0.2.1"
+    return resolver
+
+
+@pytest.fixture
+def mock_resolver_list_2():
+    resolver = MagicMock(spec=DnsResolver)
+    resolver.ip_address = "192.0.2.2"
+    return resolver
+
+
+@pytest.fixture
+def mock_resolvers(mock_resolver_list_1, mock_resolver_list_2):
+    resolver_list = MagicMock(spec=DnsResolverList)
+    resolver_list.resolvers = MagicMock()
+    resolver_list.resolvers.get = MagicMock()
+    resolver_list.resolvers.get.return_value = [mock_resolver_list_1, mock_resolver_list_2]
+    resolver_list.count = MagicMock()
+    resolver_list.count.return_value = 2
+    return resolver_list
 
 
 @patch('kuhl_haus.magpie.canary.tasks.dns_check.dns_query')
-def test_query_dns_successful_first_resolver(mock_dns_query, mock_resolvers, mock_endpoint, mock_metrics, mock_logger):
+def test_query_dns_successful_first_resolver(mock_dns_query, mock_resolvers, mock_resolver_list_1, mock_endpoint, mock_metrics, mock_logger):
     """Test successful DNS query with the first resolver."""
     # Arrange
     mock_response = MagicMock(spec=dns.message.Message)
@@ -61,7 +77,7 @@ def test_query_dns_successful_first_resolver(mock_dns_query, mock_resolvers, moc
 
     # Assert
     mock_dns_query.assert_called_once_with(
-        mock_resolvers[0].ip_address, mock_endpoint.hostname, "A", use_tcp=False
+        mock_resolver_list_1.ip_address, mock_endpoint.hostname, "A", use_tcp=False
     )
     mock_metrics.set_counter.assert_has_calls([
         call('requests', 1),
@@ -128,7 +144,7 @@ def test_query_dns_timeout_for_all_resolvers(mock_dns_query, mock_resolvers, moc
     query_dns(mock_resolvers, mock_endpoint, mock_metrics, mock_logger)
 
     # Assert
-    assert mock_dns_query.call_count == len(mock_resolvers)
+    assert mock_dns_query.call_count == mock_resolvers.count()
     assert mock_metrics.set_counter.call_args_list == [
         call('requests', 1),
         call('errors', 1),
