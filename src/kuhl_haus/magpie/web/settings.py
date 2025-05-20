@@ -70,7 +70,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'drf_yasg',
-    'kuhl_haus.magpie.canary.apps.CanaryConfig',
+    'kuhl_haus.magpie.database.apps.DatabaseConfig',
     'kuhl_haus.magpie.endpoints.apps.EndpointsConfig',
     'rest_framework',
     'django_celery_results',

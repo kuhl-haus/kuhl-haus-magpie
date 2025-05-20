@@ -4,7 +4,7 @@ build-backend = "pdm.backend"
 
 [project]
 name = "kuhl-haus-magpie"
-version = "0.1.11"
+version = "0.1.12"
 description = "Site monitoring and synthetic transaction service"
 authors = [
     { name = "Tom Pounders", email = "git@oldschool.engineer" },
@@ -29,8 +29,6 @@ dependencies = [
     "drf-yasg",
     "gunicorn",
     "importlib-metadata",
-    "kuhl-haus-metrics",
-    "kuhl-haus-canary",
     "psycopg2-binary",
     "psutil",
     "pyOpenSSL",

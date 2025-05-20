@@ -1,8 +1,30 @@
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from kuhl_haus.magpie.endpoints.models import EndpointModel, DnsResolver, DnsResolverList
-from kuhl_haus.magpie.endpoints.serializers import EndpointModelSerializer, DnsResolverSerializer, DnsResolverListSerializer
+from kuhl_haus.magpie.endpoints.models import (
+    EndpointModel,
+    DnsResolver,
+    DnsResolverList,
+    CarbonClientConfig,
+    ScriptConfig
+)
+from kuhl_haus.magpie.endpoints.serializers import (
+    EndpointModelSerializer,
+    DnsResolverSerializer,
+    DnsResolverListSerializer,
+    CarbonClientConfigSerializer,
+    ScriptConfigSerializer
+)
+
+
+class CarbonConfigViewSet(viewsets.ModelViewSet):
+    queryset = CarbonClientConfig.objects.all()
+    serializer_class = CarbonClientConfigSerializer
+
+
+class ScriptConfigViewSet(viewsets.ModelViewSet):
+    queryset = ScriptConfig.objects.all()
+    serializer_class = ScriptConfigSerializer
 
 
 class EndpointModelViewSet(viewsets.ModelViewSet):

@@ -1,6 +1,25 @@
 from rest_framework import serializers
-from kuhl_haus.magpie.endpoints.models import EndpointModel, DnsResolver, DnsResolverList
+from kuhl_haus.magpie.endpoints.models import (
+    EndpointModel,
+    DnsResolver,
+    DnsResolverList,
+    CarbonClientConfig,
+    ScriptConfig
+)
 
+
+class CarbonClientConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CarbonClientConfig
+        fields = ['name', 'server_ip', 'pickle_port']
+
+
+class ScriptConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ScriptConfig
+        fields = [
+            'name', 'application_name', 'log_level', 'namespace_root', 'metric_namespace', 'delay', 'count'
+        ]
 
 class DnsResolverSerializer(serializers.ModelSerializer):
     class Meta:
