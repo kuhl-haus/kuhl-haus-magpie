@@ -111,19 +111,24 @@ class DnsResolverListAdmin(ModelAdmin):
 
 @admin.register(EndpointModel)
 class EndpointModelAdmin(ModelAdmin):
-    list_display = ('mnemonic', 'hostname', 'ignore', 'tls_check', 'dns_check', 'health_check', 'response_format', 'dns_resolver_list')
-    list_filter = ('ignore', 'tls_check', 'dns_check', 'health_check', 'response_format', 'dns_resolver_list')
+    list_display = (
+        'mnemonic', 'hostname',
+        'ignore',
+        'tls_check',
+        'health_check',
+        'response_format',
+        'dns_check',
+        'dns_resolver_list'
+    )
+    list_filter = ('ignore', 'tls_check', 'health_check', 'response_format', 'dns_check', 'dns_resolver_list')
     search_fields = ('mnemonic', 'hostname')
     fieldsets = (
         ('Basic Information', {
-            'fields': ('mnemonic', 'hostname',)
-        }),
-        ('Checks', {
-            'fields': ('ignore', 'tls_check', 'dns_check', 'health_check',)
+            'fields': ('mnemonic', 'hostname', 'ignore',)
         }),
         ('Health Check Configuration', {
             'fields': (
-                'scheme', 'port', 'path', 'verb', 'query', 'fragment'
+                'health_check', 'tls_check', 'scheme', 'port', 'path', 'verb', 'query', 'fragment'
             )
         }),
         ('Post Parameters', {
@@ -138,7 +143,7 @@ class EndpointModelAdmin(ModelAdmin):
         ('Timeout Settings', {
             'fields': ('connect_timeout', 'read_timeout')
         }),
-        ('Additional Settings', {
-            'fields': ('dns_resolver_list',)
+        ('DNS Check Configuration', {
+            'fields': ('dns_check', 'dns_resolver_list',)
         }),
     )

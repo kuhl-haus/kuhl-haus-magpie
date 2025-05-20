@@ -29,19 +29,6 @@
                             <td>{{ endpoint.mnemonic }}</td>
                             <td>{{ endpoint.hostname }}</td>
                             <td>
-                                {% if endpoint.dns_resolver_list %}
-                                    <a href="{% url 'resolver-list-detail' endpoint.dns_resolver_list.pk %}"
-                                       class="badge bg-info text-decoration-none">
-                                        {{ endpoint.dns_resolver_list.name }}
-                                        <span class="badge bg-secondary">
-                                            {{ endpoint.dns_resolver_list.resolvers.count }} resolver(s)
-                                        </span>
-                                    </a>
-                                {% else %}
-                                    <span class="badge bg-secondary">None</span>
-                                {% endif %}
-                            </td>
-                            <td>
                                 {% if endpoint.ignore %}
                                     <span class="badge bg-secondary">Ignored</span>
                                 {% else %}
@@ -67,6 +54,19 @@
                                     <span class="badge bg-success">Enabled</span>
                                 {% else %}
                                     <span class="badge bg-secondary">Disabled</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if endpoint.dns_resolver_list %}
+                                    <a href="{% url 'resolver-list-detail' endpoint.dns_resolver_list.pk %}"
+                                       class="badge bg-info text-decoration-none">
+                                        {{ endpoint.dns_resolver_list.name }}
+                                        <span class="badge bg-secondary">
+                                            {{ endpoint.dns_resolver_list.resolvers.count }} resolver(s)
+                                        </span>
+                                    </a>
+                                {% else %}
+                                    <span class="badge bg-secondary">None</span>
                                 {% endif %}
                             </td>
                             <td>
