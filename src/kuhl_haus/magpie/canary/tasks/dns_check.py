@@ -1,5 +1,7 @@
 from logging import Logger
 
+import time
+
 import dns.query
 from dns.message import make_query
 
@@ -16,7 +18,11 @@ def query_dns(resolvers: DnsResolverList, ep: EndpointModel, metrics: Metrics, l
     for resolver in resolver_list:
         try:
             metrics.set_counter('requests', 1)
+            start_time = time.perf_counter_ns()
             response: dns.message.Message = dns_query(resolver.ip_address, ep.hostname, "A", use_tcp=False)
+            response_time = time.perf_counter_ns() - start_time
+            metrics.attributes['response_time'] = int(response_time)
+            metrics.attributes['response_time_ms'] = int(response_time // 1_000_000)
             metrics.set_counter('responses', 1)
             metrics.attributes['truncated'] = int((dns.flags.TC & response.flags) > 0)
             metrics.attributes['rcode'] = dns.rcode.to_text(response.rcode())

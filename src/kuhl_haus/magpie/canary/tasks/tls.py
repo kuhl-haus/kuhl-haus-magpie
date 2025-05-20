@@ -3,6 +3,8 @@ import time
 from datetime import datetime
 from logging import Logger
 
+import time
+
 import OpenSSL
 from kuhl_haus.magpie.endpoints.models import EndpointModel
 from kuhl_haus.magpie.metrics.data.metrics import Metrics
@@ -11,7 +13,11 @@ from kuhl_haus.magpie.metrics.data.metrics import Metrics
 def invoke_tls_check(ep: EndpointModel, metrics: Metrics, logger: Logger):
     try:
         metrics.set_counter('requests', 1)
+        start_time = time.perf_counter_ns()
         days_until_expiration = get_tls_cert_expiration_days(ep.hostname, ep.port)
+        response_time = time.perf_counter_ns() - start_time
+        metrics.attributes['response_time'] = int(response_time)
+        metrics.attributes['response_time_ms'] = int(response_time // 1_000_000)
         metrics.set_counter('responses', 1)
         metrics.attributes["days_until_expiration"] = days_until_expiration
         metrics.attributes["expires_today"] = days_until_expiration <= 1
