@@ -68,7 +68,9 @@ class ClockedScheduleAdmin(BaseClockedScheduleAdmin, ModelAdmin):
 @admin.register(ScriptConfig)
 class ScriptConfigAdmin(ModelAdmin):
     list_display = (
-        'name', 'application_name', 'log_level', 'namespace_root', 'metric_namespace', 'carbon_metrics_enabled'
+        'name', 'application_name',
+        'log_level',
+        'carbon_metrics_enabled', 'carbon_server_ip', 'namespace_root', 'metric_namespace',
     )
     list_filter = (
         'application_name',
@@ -78,7 +80,7 @@ class ScriptConfigAdmin(ModelAdmin):
         'namespace_root',
         'metric_namespace',
     )
-    search_fields = ('name', 'application_name', 'namespace_root', 'metric_namespace')
+    search_fields = ('name', 'application_name', 'carbon_server_ip', 'namespace_root', 'metric_namespace')
     fieldsets = (
         ('Basic Information', {
             'fields': ('name', 'application_name',),
