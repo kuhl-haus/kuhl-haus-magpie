@@ -7,7 +7,6 @@ router = DefaultRouter()
 router.register(r'api/endpoints', api_views.EndpointModelViewSet)
 router.register(r'api/resolvers', api_views.DnsResolverViewSet)
 router.register(r'api/resolver-lists', api_views.DnsResolverListViewSet)
-router.register(r'api/carbon-configs', api_views.CarbonConfigViewSet)
 router.register(r'api/scripts', api_views.ScriptConfigViewSet)
 
 

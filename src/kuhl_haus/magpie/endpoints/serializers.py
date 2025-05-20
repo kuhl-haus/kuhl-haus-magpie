@@ -3,22 +3,18 @@ from kuhl_haus.magpie.endpoints.models import (
     EndpointModel,
     DnsResolver,
     DnsResolverList,
-    CarbonClientConfig,
     ScriptConfig
 )
-
-
-class CarbonClientConfigSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CarbonClientConfig
-        fields = ['name', 'server_ip', 'pickle_port']
 
 
 class ScriptConfigSerializer(serializers.ModelSerializer):
     class Meta:
         model = ScriptConfig
         fields = [
-            'name', 'application_name', 'log_level', 'namespace_root', 'metric_namespace', 'delay', 'count'
+            'name', 'application_name', 'log_level',
+            'carbon_metrics_enabled',
+            'carbon_server_ip', 'carbon_pickle_port',
+            'namespace_root', 'metric_namespace'
         ]
 
 

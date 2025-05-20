@@ -3,35 +3,23 @@ import os
 from typing import List
 
 from celery import shared_task
-
 from django.core.exceptions import ObjectDoesNotExist
+
 from kuhl_haus.magpie.canary.scripts.canary import Canary
 from kuhl_haus.magpie.canary.tasks.dns_check import query_dns
-from kuhl_haus.magpie.metrics.recorders.graphite_logger import GraphiteLogger, GraphiteLoggerOptions
-from kuhl_haus.magpie.metrics.clients.carbon_poster import CarbonPoster
-from kuhl_haus.magpie.metrics.data.metrics import Metrics
-
 from kuhl_haus.magpie.canary.tasks.http_health_check import invoke_health_check
 from kuhl_haus.magpie.canary.tasks.tls import invoke_tls_check
-from kuhl_haus.magpie.endpoints.models import EndpointModel, DnsResolver, DnsResolverList, CarbonClientConfig, ScriptConfig
+from kuhl_haus.magpie.endpoints.models import EndpointModel, ScriptConfig
+from kuhl_haus.magpie.metrics.clients.carbon_poster import CarbonPoster
+from kuhl_haus.magpie.metrics.data.metrics import Metrics
+from kuhl_haus.magpie.metrics.recorders.graphite_logger import GraphiteLogger, GraphiteLoggerOptions
 from kuhl_haus.magpie.web.celery_app import app
-
 
 logger = logging.getLogger(__name__)
 
 
 @app.task
-def canary(carbon_client_name: str = "default", application_name: str = "canary"):
-    try:
-        carbon_config = CarbonClientConfig.objects.get(name__iexact=carbon_client_name)
-    except ObjectDoesNotExist:
-        return {
-            "status": "failed",
-            "results": {
-                "message": f"Carbon client configuration {carbon_client_name} not found in database"
-            }
-        }
-
+def canary(application_name: str = "canary"):
     try:
         script_config = ScriptConfig.objects.get(application_name__iexact=application_name)
     except ObjectDoesNotExist:
@@ -41,27 +29,27 @@ def canary(carbon_client_name: str = "default", application_name: str = "canary"
                 "message": f"{application_name} configuration not found in database"
             }
         }
+
     result_metadata = {
         "script_config": {
             "name": script_config.name,
             "application_name": script_config.application_name,
             "log_level": script_config.log_level,
+            "carbon_metrics_enabled": script_config.carbon_metrics_enabled,
+            "carbon_server_ip": script_config.carbon_server_ip,
+            "carbon_pickle_port": script_config.carbon_pickle_port,
             "namespace_root": script_config.namespace_root,
             "metric_namespace": script_config.metric_namespace,
-            "delay": script_config.delay,
-            "count": script_config.count,
-        },
-        "carbon_config": {
-            "name": carbon_config.name,
-            "server_ip": carbon_config.server_ip,
-            "pickle_port": carbon_config.pickle_port,
         },
     }
     try:
         graphite_logger = GraphiteLogger(GraphiteLoggerOptions(
             application_name=application_name,
             log_level=script_config.log_level,
-            carbon_config={"server_ip": carbon_config.server_ip, "pickle_port": carbon_config.pickle_port},
+            carbon_config={
+                "server_ip": script_config.carbon_server_ip,
+                "pickle_port": script_config.carbon_pickle_port
+            },
             thread_pool_size=10,
             namespace_root=script_config.namespace_root,
             metric_namespace=script_config.metric_namespace,
@@ -77,7 +65,7 @@ def canary(carbon_client_name: str = "default", application_name: str = "canary"
             }
         }
     try:
-        Canary(recorder=graphite_logger, delay=script_config.delay, count=script_config.count)
+        Canary(recorder=graphite_logger, delay=0, count=1)
     except Exception as e:
         return {
             "status": "failed",
@@ -97,17 +85,7 @@ def canary(carbon_client_name: str = "default", application_name: str = "canary"
 
 
 @shared_task
-def http_health_check(carbon_client_name: str = "default", application_name: str = "health"):
-    try:
-        carbon_config = CarbonClientConfig.objects.get(name__iexact=carbon_client_name)
-    except ObjectDoesNotExist:
-        return {
-            "status": "failed",
-            "results": {
-                "message": f"Carbon client configuration {carbon_client_name} not found in database"
-            }
-        }
-
+def http_health_check(application_name: str = "health"):
     try:
         script_config = ScriptConfig.objects.get(application_name__iexact=application_name)
     except ObjectDoesNotExist:
@@ -122,15 +100,11 @@ def http_health_check(carbon_client_name: str = "default", application_name: str
             "name": script_config.name,
             "application_name": script_config.application_name,
             "log_level": script_config.log_level,
+            "carbon_metrics_enabled": script_config.carbon_metrics_enabled,
+            "carbon_server_ip": script_config.carbon_server_ip,
+            "carbon_pickle_port": script_config.carbon_pickle_port,
             "namespace_root": script_config.namespace_root,
             "metric_namespace": script_config.metric_namespace,
-            "delay": script_config.delay,
-            "count": script_config.count,
-        },
-        "carbon_config": {
-            "name": carbon_config.name,
-            "server_ip": carbon_config.server_ip,
-            "pickle_port": carbon_config.pickle_port,
         },
     }
     try:
@@ -144,8 +118,8 @@ def http_health_check(carbon_client_name: str = "default", application_name: str
         }
     try:
         carbon_poster: CarbonPoster = CarbonPoster(
-            server_ip=carbon_config.server_ip,
-            pickle_port=carbon_config.pickle_port
+            server_ip=script_config.carbon_server_ip,
+            pickle_port=script_config.carbon_pickle_port,
         )
     except Exception as e:
         return {
@@ -217,17 +191,7 @@ def http_health_check(carbon_client_name: str = "default", application_name: str
 
 
 @shared_task
-def tls_check(carbon_client_name: str = "default", application_name: str = "tls"):
-    try:
-        carbon_config = CarbonClientConfig.objects.get(name__iexact=carbon_client_name)
-    except ObjectDoesNotExist:
-        return {
-            "status": "failed",
-            "results": {
-                "message": f"Carbon client configuration {carbon_client_name} not found in database"
-            }
-        }
-
+def tls_check(application_name: str = "tls"):
     try:
         script_config = ScriptConfig.objects.get(application_name__iexact=application_name)
     except ObjectDoesNotExist:
@@ -242,15 +206,11 @@ def tls_check(carbon_client_name: str = "default", application_name: str = "tls"
             "name": script_config.name,
             "application_name": script_config.application_name,
             "log_level": script_config.log_level,
+            "carbon_metrics_enabled": script_config.carbon_metrics_enabled,
+            "carbon_server_ip": script_config.carbon_server_ip,
+            "carbon_pickle_port": script_config.carbon_pickle_port,
             "namespace_root": script_config.namespace_root,
             "metric_namespace": script_config.metric_namespace,
-            "delay": script_config.delay,
-            "count": script_config.count,
-        },
-        "carbon_config": {
-            "name": carbon_config.name,
-            "server_ip": carbon_config.server_ip,
-            "pickle_port": carbon_config.pickle_port,
         },
     }
     try:
@@ -264,8 +224,8 @@ def tls_check(carbon_client_name: str = "default", application_name: str = "tls"
         }
     try:
         carbon_poster: CarbonPoster = CarbonPoster(
-            server_ip=carbon_config.server_ip,
-            pickle_port=carbon_config.pickle_port
+            server_ip=script_config.carbon_server_ip,
+            pickle_port=script_config.carbon_pickle_port,
         )
     except Exception as e:
         return {
@@ -337,17 +297,7 @@ def tls_check(carbon_client_name: str = "default", application_name: str = "tls"
 
 
 @shared_task
-def dns_check(carbon_client_name: str = "default", application_name: str = "dns"):
-    try:
-        carbon_config = CarbonClientConfig.objects.get(name__iexact=carbon_client_name)
-    except ObjectDoesNotExist:
-        return {
-            "status": "failed",
-            "results": {
-                "message": f"Carbon client configuration {carbon_client_name} not found in database"
-            }
-        }
-
+def dns_check(application_name: str = "dns"):
     try:
         script_config = ScriptConfig.objects.get(application_name__iexact=application_name)
     except ObjectDoesNotExist:
@@ -362,15 +312,11 @@ def dns_check(carbon_client_name: str = "default", application_name: str = "dns"
             "name": script_config.name,
             "application_name": script_config.application_name,
             "log_level": script_config.log_level,
+            "carbon_metrics_enabled": script_config.carbon_metrics_enabled,
+            "carbon_server_ip": script_config.carbon_server_ip,
+            "carbon_pickle_port": script_config.carbon_pickle_port,
             "namespace_root": script_config.namespace_root,
             "metric_namespace": script_config.metric_namespace,
-            "delay": script_config.delay,
-            "count": script_config.count,
-        },
-        "carbon_config": {
-            "name": carbon_config.name,
-            "server_ip": carbon_config.server_ip,
-            "pickle_port": carbon_config.pickle_port,
         },
     }
     try:
@@ -384,8 +330,8 @@ def dns_check(carbon_client_name: str = "default", application_name: str = "dns"
         }
     try:
         carbon_poster: CarbonPoster = CarbonPoster(
-            server_ip=carbon_config.server_ip,
-            pickle_port=carbon_config.pickle_port
+            server_ip=script_config.carbon_server_ip,
+            pickle_port=script_config.carbon_pickle_port,
         )
     except Exception as e:
         return {

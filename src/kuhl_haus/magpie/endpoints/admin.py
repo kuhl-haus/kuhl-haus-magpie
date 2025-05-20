@@ -5,11 +5,11 @@ from kuhl_haus.magpie.endpoints.models import (
     EndpointModel,
     DnsResolver,
     DnsResolverList,
-    CarbonClientConfig,
     ScriptConfig
 )
 from unfold.widgets import UnfoldAdminSelectWidget, UnfoldAdminTextInputWidget
 
+# https://unfoldadmin.com/docs/integrations/django-celery-beat/
 from django_celery_beat.models import (
     ClockedSchedule,
     CrontabSchedule,
@@ -65,16 +65,19 @@ class ClockedScheduleAdmin(BaseClockedScheduleAdmin, ModelAdmin):
     pass
 
 
-@admin.register(CarbonClientConfig)
-class CarbonClientConfigAdmin(ModelAdmin):
-    list_display = ('name', 'server_ip', 'pickle_port')
-    search_fields = ('name', 'server_ip', 'pickle_port')
-
-
 @admin.register(ScriptConfig)
 class ScriptConfigAdmin(ModelAdmin):
-    list_display = ('name', 'application_name', 'log_level', 'namespace_root', 'metric_namespace', 'delay', 'count')
-    list_filter = ('application_name', 'log_level', 'namespace_root', 'metric_namespace', 'delay', 'count')
+    list_display = (
+        'name', 'application_name', 'log_level', 'namespace_root', 'metric_namespace', 'carbon_metrics_enabled'
+    )
+    list_filter = (
+        'application_name',
+        'log_level',
+        'carbon_metrics_enabled',
+        'carbon_server_ip',
+        'namespace_root',
+        'metric_namespace',
+    )
     search_fields = ('name', 'application_name', 'namespace_root', 'metric_namespace')
     fieldsets = (
         ('Basic Information', {
@@ -84,10 +87,13 @@ class ScriptConfigAdmin(ModelAdmin):
             'fields': ('log_level',),
         }),
         ('Metrics Parameters', {
-            'fields': ('namespace_root', 'metric_namespace',),
-        }),
-        ('Runtime Parameters', {
-            'fields': ('delay', 'count'),
+            'fields': (
+                'carbon_metrics_enabled',
+                'carbon_server_ip',
+                'carbon_pickle_port',
+                'namespace_root',
+                'metric_namespace',
+            ),
         }),
     )
 

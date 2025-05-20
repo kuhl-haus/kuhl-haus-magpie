@@ -5,21 +5,14 @@ from kuhl_haus.magpie.endpoints.models import (
     EndpointModel,
     DnsResolver,
     DnsResolverList,
-    CarbonClientConfig,
     ScriptConfig
 )
 from kuhl_haus.magpie.endpoints.serializers import (
     EndpointModelSerializer,
     DnsResolverSerializer,
     DnsResolverListSerializer,
-    CarbonClientConfigSerializer,
     ScriptConfigSerializer
 )
-
-
-class CarbonConfigViewSet(viewsets.ModelViewSet):
-    queryset = CarbonClientConfig.objects.all()
-    serializer_class = CarbonClientConfigSerializer
 
 
 class ScriptConfigViewSet(viewsets.ModelViewSet):
