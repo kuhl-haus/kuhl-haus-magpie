@@ -65,6 +65,7 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # Application definition
+# https://unfoldadmin.com/docs/configuration/settings/
 INSTALLED_APPS = [
     "unfold",  # before django.contrib.admin
     # "unfold.contrib.filters",  # optional, if special filters are needed
