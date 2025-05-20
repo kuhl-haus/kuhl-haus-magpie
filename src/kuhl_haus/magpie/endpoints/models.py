@@ -1,3 +1,5 @@
+from urllib import parse
+
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
@@ -37,6 +39,9 @@ class DnsResolver(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.ip_address})"
+
+    def to_json(self):
+        return {"name": self.name, "ip_address": self.ip_address}
 
 
 class DnsResolverList(models.Model):
@@ -94,3 +99,24 @@ class EndpointModel(models.Model):
 
     def __str__(self):
         return f"{self.mnemonic} - {self.hostname}"
+
+    @staticmethod
+    def __normalize_path(path: str) -> str:
+        if not path:
+            path = "/"
+        elif not path.startswith("/"):
+            path = f"/{path}"
+        # Replace multiple slashes with a single slash
+        while '//' in path:
+            path = path.replace('//', '/')
+        return path
+
+    @property
+    def url(self) -> str:
+        path = self.__normalize_path(self.path)
+        if self.query:
+            query_string = parse.urlencode(self.query)
+            path = parse.urljoin(path, f"?{query_string}")
+        if self.fragment:
+            path = parse.urljoin(path, f"#{self.fragment}")
+        return f"{self.scheme}://{self.hostname}:{self.port}{path}"
