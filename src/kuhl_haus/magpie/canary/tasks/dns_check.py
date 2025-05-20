@@ -4,8 +4,7 @@ from typing import List
 import dns.query
 from dns.message import make_query
 
-from kuhl_haus.magpie.canary.models.dns_resolver import DnsResolver
-from kuhl_haus.magpie.canary.models.endpoint_model import EndpointModel
+from kuhl_haus.magpie.endpoints.models import EndpointModel, DnsResolver
 from kuhl_haus.magpie.metrics.data.metrics import Metrics
 
 

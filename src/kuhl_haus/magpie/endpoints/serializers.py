@@ -21,6 +21,7 @@ class ScriptConfigSerializer(serializers.ModelSerializer):
             'name', 'application_name', 'log_level', 'namespace_root', 'metric_namespace', 'delay', 'count'
         ]
 
+
 class DnsResolverSerializer(serializers.ModelSerializer):
     class Meta:
         model = DnsResolver

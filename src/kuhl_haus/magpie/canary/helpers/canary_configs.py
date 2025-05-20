@@ -8,8 +8,7 @@ from kuhl_haus.magpie.canary.env import (
     CANARY_CONFIG_FILE_PATH,
     RESOLVERS_CONFIG_FILE_PATH,
 )
-from kuhl_haus.magpie.canary.models.dns_resolver import DnsResolver, DnsResolverList
-from kuhl_haus.magpie.canary.models.endpoint_model import EndpointModel
+from kuhl_haus.magpie.endpoints.models import DnsResolver, DnsResolverList, EndpointModel
 
 
 def from_file(file_path, model) -> List[Any]:

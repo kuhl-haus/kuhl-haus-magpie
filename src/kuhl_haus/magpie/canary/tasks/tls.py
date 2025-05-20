@@ -4,7 +4,7 @@ from datetime import datetime
 from logging import Logger
 
 import OpenSSL
-from kuhl_haus.magpie.canary.models.endpoint_model import EndpointModel
+from kuhl_haus.magpie.endpoints.models import EndpointModel
 from kuhl_haus.magpie.metrics.data.metrics import Metrics
 
 

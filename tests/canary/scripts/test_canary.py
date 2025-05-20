@@ -2,8 +2,7 @@ import pytest
 from unittest.mock import Mock, patch, MagicMock, call
 
 from kuhl_haus.magpie.canary.scripts.canary import Canary
-from kuhl_haus.magpie.canary.models.dns_resolver import DnsResolver, DnsResolverList
-from kuhl_haus.magpie.canary.models.endpoint_model import EndpointModel
+from kuhl_haus.magpie.endpoints.models import DnsResolver, DnsResolverList, EndpointModel
 
 
 @pytest.fixture

@@ -53,22 +53,24 @@ class EndpointModelAdmin(admin.ModelAdmin):
     search_fields = ('mnemonic', 'hostname')
     fieldsets = (
         ('Basic Information', {
-            'fields': ('mnemonic', 'hostname', 'scheme', 'port', 'path', 'verb')
+            'fields': ('mnemonic', 'hostname',)
         }),
-        ('Query Parameters', {
-            'fields': ('query', 'fragment'),
+        ('Checks', {
+            'fields': ('ignore', 'tls_check', 'dns_check', 'health_check',)
+        }),
+        ('Health Check Configuration', {
+            'fields': (
+                'scheme', 'port', 'path', 'verb', 'query', 'fragment'
+            )
         }),
         ('Post Parameters', {
             'fields': ('body',),
         }),
         ('Response Settings', {
-            'fields': ('healthy_status_code', 'response_format',)
+            'fields': ('healthy_status_code', 'response_format')
         }),
-        ('Health Check Configuration', {
-            'fields': (
-                'ignore', 'tls_check', 'dns_check', 'health_check',
-                'status_key', 'healthy_status', 'version_key'
-            )
+        ('JSON Response Settings', {
+            'fields': ('status_key', 'healthy_status', 'version_key')
         }),
         ('Timeout Settings', {
             'fields': ('connect_timeout', 'read_timeout')

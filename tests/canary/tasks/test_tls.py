@@ -5,7 +5,7 @@ import time
 from datetime import datetime, timedelta
 import OpenSSL
 
-from kuhl_haus.magpie.canary.models.endpoint_model import EndpointModel
+from kuhl_haus.magpie.endpoints.models import EndpointModel
 from kuhl_haus.magpie.metrics.data.metrics import Metrics
 from kuhl_haus.magpie.canary.tasks.tls import invoke_tls_check, get_tls_cert_expiration_days
 

@@ -8,8 +8,7 @@ import dns.flags
 import dns.exception
 import dns.query
 
-from kuhl_haus.magpie.canary.models.dns_resolver import DnsResolver
-from kuhl_haus.magpie.canary.models.endpoint_model import EndpointModel
+from kuhl_haus.magpie.endpoints.models import DnsResolver, EndpointModel
 from kuhl_haus.magpie.metrics.data.metrics import Metrics
 from kuhl_haus.magpie.canary.tasks.dns_check import query_dns, dns_query
 

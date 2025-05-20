@@ -4,8 +4,7 @@ from kuhl_haus.magpie.canary.helpers.canary_configs import (
     get_endpoints,
     get_default_resolver_list,
 )
-from kuhl_haus.magpie.canary.models.dns_resolver import DnsResolver
-from kuhl_haus.magpie.canary.models.endpoint_model import EndpointModel
+from kuhl_haus.magpie.endpoints.models import DnsResolver, EndpointModel
 from kuhl_haus.magpie.canary.scripts.script import Script
 from kuhl_haus.magpie.canary.tasks.dns_check import query_dns
 from kuhl_haus.magpie.canary.tasks.http_health_check import invoke_health_check

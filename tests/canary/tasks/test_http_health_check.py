@@ -5,7 +5,7 @@ import time
 import requests
 
 from kuhl_haus.magpie.metrics.data.metrics import Metrics
-from kuhl_haus.magpie.canary.models.endpoint_model import EndpointModel
+from kuhl_haus.magpie.endpoints.models import EndpointModel
 from kuhl_haus.magpie.canary.tasks.http_health_check import invoke_health_check, handle_json_response
 
 
