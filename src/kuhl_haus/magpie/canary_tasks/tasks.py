@@ -19,14 +19,14 @@ logger = logging.getLogger(__name__)
 
 
 @app.task
-def canary(application_name: str = "canary"):
+def canary(script_config_name: str = "canary"):
     try:
-        script_config = ScriptConfig.objects.get(application_name__iexact=application_name)
+        script_config = ScriptConfig.objects.get(name__iexact=script_config_name)
     except ObjectDoesNotExist:
         return {
             "status": "failed",
             "results": {
-                "message": f"{application_name} configuration not found in database"
+                "message": f"{script_config_name} configuration not found in database"
             }
         }
 
@@ -44,7 +44,7 @@ def canary(application_name: str = "canary"):
     }
     try:
         graphite_logger = GraphiteLogger(GraphiteLoggerOptions(
-            application_name=application_name,
+            application_name=script_config.application_name,
             log_level=script_config.log_level,
             carbon_config={
                 "server_ip": script_config.carbon_server_ip,
@@ -85,14 +85,14 @@ def canary(application_name: str = "canary"):
 
 
 @shared_task
-def http_health_check(application_name: str = "health"):
+def http_health_check(script_config_name: str = "health"):
     try:
-        script_config = ScriptConfig.objects.get(application_name__iexact=application_name)
+        script_config = ScriptConfig.objects.get(name__iexact=script_config_name)
     except ObjectDoesNotExist:
         return {
             "status": "failed",
             "results": {
-                "message": f"{application_name} configuration not found in database"
+                "message": f"{script_config_name} configuration not found in database"
             }
         }
     result_metadata = {
@@ -135,7 +135,7 @@ def http_health_check(application_name: str = "health"):
             continue
         try:
             m: Metrics = Metrics(
-                name=application_name,
+                name=script_config.application_name,
                 mnemonic=ep.mnemonic,
                 namespace=f"{script_config.namespace_root}.{script_config.metric_namespace}",
                 hostname=ep.hostname,
@@ -191,14 +191,14 @@ def http_health_check(application_name: str = "health"):
 
 
 @shared_task
-def tls_check(application_name: str = "tls"):
+def tls_check(script_config_name: str = "tls"):
     try:
-        script_config = ScriptConfig.objects.get(application_name__iexact=application_name)
+        script_config = ScriptConfig.objects.get(name__iexact=script_config_name)
     except ObjectDoesNotExist:
         return {
             "status": "failed",
             "results": {
-                "message": f"{application_name} configuration not found in database"
+                "message": f"{script_config_name} configuration not found in database"
             }
         }
     result_metadata = {
@@ -241,7 +241,7 @@ def tls_check(application_name: str = "tls"):
             continue
         try:
             m: Metrics = Metrics(
-                name=application_name,
+                name=script_config.application_name,
                 mnemonic=ep.mnemonic,
                 namespace=f"{script_config.namespace_root}.{script_config.metric_namespace}",
                 hostname=ep.hostname,
@@ -297,14 +297,14 @@ def tls_check(application_name: str = "tls"):
 
 
 @shared_task
-def dns_check(application_name: str = "dns"):
+def dns_check(script_config_name: str = "dns"):
     try:
-        script_config = ScriptConfig.objects.get(application_name__iexact=application_name)
+        script_config = ScriptConfig.objects.get(name__iexact=script_config_name)
     except ObjectDoesNotExist:
         return {
             "status": "failed",
             "results": {
-                "message": f"{application_name} configuration not found in database"
+                "message": f"{script_config_name} configuration not found in database"
             }
         }
     result_metadata = {
@@ -347,7 +347,7 @@ def dns_check(application_name: str = "dns"):
             continue
         try:
             m: Metrics = Metrics(
-                name=application_name,
+                name=script_config.application_name,
                 mnemonic=ep.mnemonic,
                 namespace=f"{script_config.namespace_root}.{script_config.metric_namespace}",
                 hostname=ep.hostname,
