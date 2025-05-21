@@ -85,7 +85,7 @@ def canary(script_config_name: str = "canary"):
 
 
 @shared_task
-def http_health_check(script_config_name: str = "health"):
+def http_health_check(script_config_name: str = "http_health_check"):
     try:
         script_config = ScriptConfig.objects.get(name__iexact=script_config_name)
     except ObjectDoesNotExist:
@@ -191,7 +191,7 @@ def http_health_check(script_config_name: str = "health"):
 
 
 @shared_task
-def tls_check(script_config_name: str = "tls"):
+def tls_check(script_config_name: str = "tls_check"):
     try:
         script_config = ScriptConfig.objects.get(name__iexact=script_config_name)
     except ObjectDoesNotExist:
@@ -297,7 +297,7 @@ def tls_check(script_config_name: str = "tls"):
 
 
 @shared_task
-def dns_check(script_config_name: str = "dns"):
+def dns_check(script_config_name: str = "dns_check"):
     try:
         script_config = ScriptConfig.objects.get(name__iexact=script_config_name)
     except ObjectDoesNotExist:
