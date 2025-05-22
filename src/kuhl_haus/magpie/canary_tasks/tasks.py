@@ -2,7 +2,6 @@ import logging
 import os
 from typing import List
 
-from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
 
 from kuhl_haus.magpie.canary.scripts.canary import Canary
@@ -84,7 +83,7 @@ def canary(script_config_name: str = "canary"):
     }
 
 
-@shared_task
+@app.task
 def http_health_check(script_config_name: str = "http_health_check"):
     try:
         script_config = ScriptConfig.objects.get(name__iexact=script_config_name)
@@ -190,7 +189,7 @@ def http_health_check(script_config_name: str = "http_health_check"):
         raise
 
 
-@shared_task
+@app.task
 def tls_check(script_config_name: str = "tls_check"):
     try:
         script_config = ScriptConfig.objects.get(name__iexact=script_config_name)
@@ -296,7 +295,7 @@ def tls_check(script_config_name: str = "tls_check"):
         raise
 
 
-@shared_task
+@app.task
 def dns_check(script_config_name: str = "dns_check"):
     try:
         script_config = ScriptConfig.objects.get(name__iexact=script_config_name)
