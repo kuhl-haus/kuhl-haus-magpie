@@ -27,7 +27,7 @@
                     {% for endpoint in endpoints %}
                         <tr>
                             <td>{{ endpoint.mnemonic }}</td>
-                            <td>{{ endpoint.hostname }}</td>
+                            <td><a href="{{ endpoint.url }}" target="_blank">{{ endpoint.hostname }}</a></td>
                             <td>
                                 {% if endpoint.ignore %}
                                     <span class="badge bg-secondary">Ignored</span>
