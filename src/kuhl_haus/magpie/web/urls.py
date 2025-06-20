@@ -7,6 +7,8 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
+import kuhl_haus.magpie.web.health as health
+
 schema_view = get_schema_view(
    openapi.Info(
       title="Endpoint Manager API",
@@ -19,6 +21,10 @@ schema_view = get_schema_view(
 
 
 urlpatterns = [
+    # Health Check
+    path(r'healthz', health.json_health, name='healthz'),
+    path(r'health', health.http_health, name='health'),
+
     path('admin/', admin.site.urls),
     path('', include('kuhl_haus.magpie.endpoints.urls')),
 

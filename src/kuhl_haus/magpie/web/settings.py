@@ -6,7 +6,9 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 APP_VERSION = os.environ.get('APP_VERSION', 'Unknown')
-CONTAINER_VERSION = os.environ.get('CONTAINER_VERSION', 'Unknown')
+CONTAINER_VERSION = os.environ.get('CONTAINER_VERSION', 'Unknown')  # TODO: deprecate in favor of IMAGE_VERSION & CONTAINER_IMAGE
+IMAGE_VERSION = os.environ.get('IMAGE_VERSION', 'Unknown')  # Image versions are derived from but independent of application versions
+CONTAINER_IMAGE = os.environ.get('CONTAINER_IMAGE', 'Unknown')  # Includes repository information
 
 ASGI_APPLICATION = 'kuhl_haus.magpie.web.asgi.application'
 WSGI_APPLICATION = 'kuhl_haus.magpie.web.wsgi.application'
