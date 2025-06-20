@@ -114,7 +114,9 @@ class DnsResolverListAdmin(ModelAdmin):
 @admin.register(EndpointModel)
 class EndpointModelAdmin(ModelAdmin):
     list_display = (
-        'mnemonic', 'hostname',
+        'mnemonic',
+        'environment',
+        'hostname',
         'ignore',
         'tls_check',
         'health_check',
@@ -122,11 +124,11 @@ class EndpointModelAdmin(ModelAdmin):
         'dns_check',
         'dns_resolver_list'
     )
-    list_filter = ('ignore', 'tls_check', 'health_check', 'response_format', 'dns_check', 'dns_resolver_list')
-    search_fields = ('mnemonic', 'hostname')
+    list_filter = ('environment', 'ignore', 'tls_check', 'health_check', 'response_format', 'dns_check', 'dns_resolver_list')
+    search_fields = ('mnemonic', 'hostname', 'environment')
     fieldsets = (
         ('Basic Information', {
-            'fields': ('mnemonic', 'hostname', 'ignore',)
+            'fields': ('mnemonic', 'environment', 'hostname', 'ignore',)
         }),
         ('Health Check Configuration', {
             'fields': (

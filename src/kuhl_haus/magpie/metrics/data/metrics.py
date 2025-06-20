@@ -352,7 +352,8 @@ class Metrics:
 
         minor = min(minor, 99)
         minor_str = f"{minor:02d}"
-        build_str = f"{build:d}"
+        build = min(build, 65535)
+        build_str = f"{build:05d}"
 
         # Combine as a float
         return float(f"{major}{minor_str}.{build_str}")

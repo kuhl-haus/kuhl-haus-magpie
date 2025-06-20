@@ -7,7 +7,7 @@ class EndpointModelForm(forms.ModelForm):
     class Meta:
         model = EndpointModel
         fields = [
-            'mnemonic',
+            'mnemonic', 'environment',
             'hostname', 'scheme', 'port',
             'path', 'query', 'fragment',
             'verb', 'body',

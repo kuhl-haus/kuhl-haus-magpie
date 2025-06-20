@@ -3,9 +3,8 @@ import time
 from datetime import datetime
 from logging import Logger
 
-import time
-
 import OpenSSL
+
 from kuhl_haus.magpie.endpoints.models import EndpointModel
 from kuhl_haus.magpie.metrics.data.metrics import Metrics
 

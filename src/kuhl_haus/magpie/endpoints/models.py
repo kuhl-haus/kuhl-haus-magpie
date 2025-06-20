@@ -60,9 +60,26 @@ class EndpointModel(models.Model):
         ('json', 'json'),
         ('text', 'text'),
     ]
+    ENVIRONMENT_CHOICES = [
+        ('alpha', 'alpha'),
+        ('beta', 'beta'),
+        ('gamma', 'gamma'),
+        ('dev', 'dev'),
+        ('local', 'local'),
+        ('one-box', 'one-box'),
+        ('ppe', 'ppe'),
+        ('prod', 'prod'),
+        ('production', 'production'),
+        ('qa', 'qa'),
+        ('staging', 'staging'),
+        ('test', 'test'),
+        ('uat', 'uat'),
+        ('zeta', 'zeta'),
+    ]
 
     mnemonic = models.CharField(max_length=255)
     hostname = models.CharField(max_length=255)
+    environment = models.CharField(max_length=16, choices=ENVIRONMENT_CHOICES, default='prod')
     scheme = models.CharField(max_length=10, choices=SCHEME_CHOICES, default='https')
     port = models.IntegerField(default=443, validators=[MinValueValidator(1), MaxValueValidator(65535)])
     path = models.CharField(max_length=255, default="/")
