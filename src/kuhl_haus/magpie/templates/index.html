@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <p class="lead">Site monitoring and synthetic transaction service</p>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <h3>Site Map</h3>
+        <div class="card-deck row row-cols-1 row-cols-md-2 row-cols-lg-2 g-4">
+            <!-- Admin Section -->
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">Administration</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <a href="{{ request.scheme }}://{{ LANGFLOW_DOMAIN }}" target="_blank">Langflow</a>
+                                <p class="small text-muted">Manage agentic workflows</p>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'admin:index' %}" target="_blank">Magpie Admin</a>
+                                <p class="small text-muted">Manage database records and system settings</p>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ request.scheme }}://{{ FLOWER_DOMAIN }}" target="_blank">Tasks Dashboard</a>
+                                <p class="small text-muted">Flower - the dashboard to view Celery workers, brokers, and task history.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Section -->
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="card-title mb-0">API Resources</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <a href="{% url 'schema-swagger-ui' %}" target="_blank">API Documentation (Swagger)</a>
+                                <p class="small text-muted">Interactive API documentation</p>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'schema-redoc' %}" target="_blank">API Reference (ReDoc)</a>
+                                <p class="small text-muted">Detailed API reference documentation</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

@@ -1,11 +1,12 @@
 # kuhl_haus/magpie/web/urls.py
-from django.urls import path, include, re_path
-from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
-from rest_framework import permissions
-from drf_yasg.views import get_schema_view
+from django.contrib import admin
+from django.urls import path, include
+from django.views.generic import TemplateView
 from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
 
 import kuhl_haus.magpie.web.health as health
 
@@ -21,6 +22,9 @@ schema_view = get_schema_view(
 
 
 urlpatterns = [
+    # Index page
+    path('', TemplateView.as_view(template_name='index.html'), name='index'),
+
     # Health Check
     path(r'healthz', health.json_health, name='healthz'),
     path(r'health', health.http_health, name='health'),

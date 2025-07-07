@@ -105,7 +105,7 @@ ROOT_URLCONF = 'kuhl_haus.magpie.web.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -113,8 +113,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'kuhl_haus.magpie.endpoints.context_processors.version_info',
-                'kuhl_haus.magpie.endpoints.context_processors.flower_domain'
+                'kuhl_haus.magpie.web.context_processors.version_info',
+                'kuhl_haus.magpie.web.context_processors.domain_info'
             ],
         },
     },

@@ -18,6 +18,17 @@ def version_info(request):
     return result
 
 
-def flower_domain(request):
-    from django.conf import settings
-    return {'FLOWER_DOMAIN': settings.FLOWER_DOMAIN}
+def domain_info(request):
+    from os import environ
+    from django.core.cache import cache
+
+    result = cache.get('domain_info')
+    if result is None:
+        result = {
+            'MAGPIE_DOMAIN': environ.get('MAGPIE_DOMAIN'),
+            'FLOWER_DOMAIN': environ.get('FLOWER_DOMAIN'),
+            'LANGFLOW_DOMAIN': environ.get('LANGFLOW_DOMAIN'),
+        }
+        cache.set('domain_info', result, 300)
+    return result
+
