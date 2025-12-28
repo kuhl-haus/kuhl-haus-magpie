@@ -27,7 +27,6 @@ def domain_info(request):
         result = {
             'MAGPIE_DOMAIN': environ.get('MAGPIE_DOMAIN'),
             'FLOWER_DOMAIN': environ.get('FLOWER_DOMAIN'),
-            'LANGFLOW_DOMAIN': environ.get('LANGFLOW_DOMAIN'),
         }
         cache.set('domain_info', result, 300)
     return result
