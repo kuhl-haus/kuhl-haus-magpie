@@ -17,6 +17,7 @@ def mock_metrics():
     metrics.set_counter = MagicMock()
     metrics.mnemonic = "test_mnemonic"
     metrics.version_to_float = MagicMock(return_value=1.0)
+    metrics.version_to_int = MagicMock(return_value=1)
     return metrics
 
 
@@ -196,7 +197,7 @@ def test_invoke_health_check_json_response_success(mock_get, endpoint_model, moc
         call('responses', 1),
     ])
     assert mock_metrics.attributes['version'] == 1.0
-    mock_metrics.version_to_float.assert_called_once_with("1.2.3")
+    mock_metrics.version_to_int.assert_called_once_with("1.2.3")
 
 
 @patch('kuhl_haus.magpie.canary.tasks.http_health_check.json.loads')
@@ -214,7 +215,7 @@ def test_handle_json_response_success(mock_json_loads, endpoint_model, mock_metr
     mock_metrics.set_counter.assert_has_calls([
         call('responses', 1),
     ])
-    mock_metrics.version_to_float.assert_called_once_with("1.2.3")
+    mock_metrics.version_to_int.assert_called_once_with("1.2.3")
     assert mock_metrics.attributes['version'] == 1.0
 
 
@@ -231,7 +232,7 @@ def test_handle_json_response_error_status(endpoint_model, mock_metrics):
     mock_metrics.set_counter.assert_has_calls([
         call('errors', 1),
     ])
-    mock_metrics.version_to_float.assert_called_once_with("1.2.3")
+    mock_metrics.version_to_int.assert_called_once_with("1.2.3")
     assert mock_metrics.attributes['version'] == 1.0
 
 
@@ -248,7 +249,7 @@ def test_handle_json_response_missing_status(endpoint_model, mock_metrics):
     mock_metrics.set_counter.assert_has_calls([
         call('errors', 1),
     ])
-    mock_metrics.version_to_float.assert_called_once_with("1.2.3")
+    mock_metrics.version_to_int.assert_called_once_with("1.2.3")
     assert mock_metrics.attributes['version'] == 1.0
 
 

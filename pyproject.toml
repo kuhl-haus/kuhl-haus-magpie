@@ -4,7 +4,7 @@ build-backend = "pdm.backend"
 
 [project]
 name = "kuhl-haus-magpie"
-version = "0.5.0"
+version = "0.5.1"
 description = "Site monitoring and synthetic transaction service"
 authors = [
     { name = "Tom Pounders", email = "git@oldschool.engineer" },

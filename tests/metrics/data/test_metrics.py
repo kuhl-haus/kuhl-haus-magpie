@@ -347,6 +347,7 @@ def test_simple_version_to_float_conversion(version, expected):
     ("0.99.0", 9900),
     ("0.100.0", 9900),  # Minor is capped at 99
     ("1.0.0", 10000),
+    ("1.71.1", 17101),
     ("1.2.3-alpha", 10203),  # Pre-release tags should be ignored
     ("2.0.0+build.1", 20000),  # Build metadata should be ignored
 ])
