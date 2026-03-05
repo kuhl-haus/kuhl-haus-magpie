@@ -4,18 +4,18 @@ build-backend = "pdm.backend"
 
 [project]
 name = "kuhl-haus-magpie"
-version = "0.5.2"
 description = "Site monitoring and synthetic transaction service"
 authors = [
     { name = "Tom Pounders", email = "git@oldschool.engineer" },
 ]
-readme = "README.md"
+readme = "README.rst"
 requires-python = ">=3.12"
 license = {file = "LICENSE.txt"}
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python"
 ]
+dynamic = ["version"]
 dependencies = [
     "celery",
     "Django",
@@ -40,8 +40,8 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/kuhl-haus/kuhl-haus-magpie"
 Documentation = "https://github.com/kuhl-haus/kuhl-haus-magpie/wiki"
-Source = "https://github.com/kuhl-haus/kuhl-haus-magpie.git"
-Changelog = "https://github.com/kuhl-haus/kuhl-haus-magpie/commits"
+Source = "https://github.com/kuhl-haus/kuhl-haus-magpie"
+Changelog = "https://github.com/kuhl-haus/kuhl-haus-magpie/blob/mainline/CHANGELOG.rst"
 Tracker = "https://github.com/kuhl-haus/kuhl-haus-magpie/issues"
 
 [project.optional-dependencies]
@@ -55,35 +55,40 @@ testing = [
 # [project.scripts]
 # magpie = "kuhl_haus.magpie.api:run"
 
-[tool.setuptools]
-zip-safe = true
-include-package-data = true
-package-dir = {"" = "src"}
-packages = {find = {where = ["src"], exclude = ["tests"]}}
-
 [tool.pytest.ini_options]
 addopts = ["--verbose"]
-norecursedirs = ["dist", "build", ".tox"]
+norecursedirs = ["dist", "build"]
 testpaths = ["tests"]
-
-[tool.devpi.upload]
-no_vcs = 1
-formats = ["bdist_wheel"]
+DJANGO_SETTINGS_MODULE = "kuhl_haus.magpie.web.settings"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
 
 [tool.flake8]
 max_line_length = 88
 extend_ignore = ["E203", "W503"]
-exclude = [".tox", "build", "dist", ".eggs", "docs/conf.py"]
-
-[tool.pyscaffold]
-version = "4.6"
-package = "magpie"
-extensions = ["namespace"]
-namespace = "kuhl_haus"
+exclude = ["build", "dist", "docs/conf.py"]
 
 [tool.pdm]
 distribution = true
+version = { source = "scm" }
 
 [tool.pdm.build]
 package-dir = "src"
 includes = ["src/kuhl_haus"]
+
+[tool.coverage.run]
+branch = true
+source = ["kuhl_haus.magpie"]
+
+[tool.coverage.paths]
+source = ["src/", "*/site-packages/"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self\\.debug",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+]
