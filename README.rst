@@ -66,17 +66,17 @@ Architecture
 
 .. code-block:: text
 
-   ┌─────────────┐     ┌──────────────┐     ┌──────────────┐
+   ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
    │ Celery Beat  │────>│ Celery Worker│────>│  Canary Task │
    │ (scheduler)  │     │              │     │  Functions   │
-   └─────────────┘     └──────────────┘     └──────┬───────┘
+   └──────────────┘     └──────────────┘     └──────┬───────┘
                                                     │
                               ┌─────────────────────┼─────────────────────┐
                               │                     │                     │
-                        ┌─────▼──────┐       ┌──────▼──────┐      ┌──────▼──────┐
-                        │ HTTP Health │       │  TLS Check  │      │  DNS Check  │
-                        │   Check    │       │             │      │             │
-                        └─────┬──────┘       └──────┬──────┘      └──────┬──────┘
+                        ┌─────▼───────┐       ┌─────▼──────┐      ┌───────▼─────┐
+                        │ HTTP Health │       │  TLS Check │      │  DNS Check  │
+                        │   Check     │       │            │      │             │
+                        └─────┬───────┘       └─────┬──────┘      └───────┬─────┘
                               │                     │                     │
                               └─────────────────────┼─────────────────────┘
                                                     │
@@ -85,15 +85,15 @@ Architecture
                                              │  (pickle)   │     │  Server  │
                                              └─────────────┘     └──────────┘
 
-   ┌─────────────┐     ┌──────────────┐
+   ┌──────────────┐     ┌──────────────┐
    │ Django Admin │────>│  PostgreSQL  │  (SQLite for development)
-   │  (Unfold)   │     │   Database   │
-   └─────────────┘     └──────────────┘
+   │  (Unfold)    │     │   Database   │
+   └──────────────┘     └──────────────┘
 
-   ┌─────────────┐
+   ┌──────────────┐
    │  Django Web  │──── /health, /healthz, /admin/, /api/
    │  (Gunicorn)  │
-   └─────────────┘
+   └──────────────┘
 
 **Celery Beat** triggers canary tasks on a schedule you define through the Django Admin. **Celery Workers** execute the checks and batch-post metrics to your Graphite server. The **Django web application** provides endpoint management, health check endpoints, and a Swagger/ReDoc API.
 

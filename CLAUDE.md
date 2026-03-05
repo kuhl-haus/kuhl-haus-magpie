@@ -65,39 +65,34 @@ tests/
 ## Architecture
 
 ```
-┌─────────────┐     ┌──────────────┐     ┌──────────────┐
-│ Celery Beat  │────>│ Celery Worker│────>│  Canary Task │
-│ (scheduler)  │     │              │     │  Functions   │
-└─────────────┘     └──────────────┘     └──────┬───────┘
-                                                 │
-                           ┌─────────────────────┼─────────────────────┐
-                           │                     │                     │
-                     ┌─────▼──────┐       ┌──────▼──────┐      ┌──────▼──────┐
-                     │ HTTP Health │       │  TLS Check  │      │  DNS Check  │
-                     │   Check    │       │             │      │             │
-                     └─────┬──────┘       └──────┬──────┘      └──────┬──────┘
-                           │                     │                     │
-                           └─────────────────────┼─────────────────────┘
-                                                 │
-                                          ┌──────▼──────┐
-                                          │   Metrics   │
-                                          │  Dataclass  │
-                                          └──────┬──────┘
-                                                 │
-                                          ┌──────▼──────┐     ┌──────────┐
-                                          │ CarbonPoster│────>│ Graphite │
-                                          │  (pickle)   │     │  Server  │
-                                          └─────────────┘     └──────────┘
+   ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+   │ Celery Beat  │────>│ Celery Worker│────>│  Canary Task │
+   │ (scheduler)  │     │              │     │  Functions   │
+   └──────────────┘     └──────────────┘     └──────┬───────┘
+                                                    │
+                              ┌─────────────────────┼─────────────────────┐
+                              │                     │                     │
+                        ┌─────▼───────┐       ┌─────▼──────┐      ┌───────▼─────┐
+                        │ HTTP Health │       │  TLS Check │      │  DNS Check  │
+                        │   Check     │       │            │      │             │
+                        └─────┬───────┘       └─────┬──────┘      └───────┬─────┘
+                              │                     │                     │
+                              └─────────────────────┼─────────────────────┘
+                                                    │
+                                             ┌──────▼──────┐     ┌──────────┐
+                                             │ CarbonPoster│────>│ Graphite │
+                                             │  (pickle)   │     │  Server  │
+                                             └─────────────┘     └──────────┘
 
-┌─────────────┐     ┌──────────────┐
-│ Django Admin │────>│  PostgreSQL  │  (SQLite in dev/test)
-│  (Unfold)   │     │   Database   │
-└─────────────┘     └──────────────┘
+   ┌──────────────┐     ┌──────────────┐
+   │ Django Admin │────>│  PostgreSQL  │  (SQLite for development)
+   │  (Unfold)    │     │   Database   │
+   └──────────────┘     └──────────────┘
 
-┌─────────────┐
-│  Django Web  │──── /health, /healthz, /api/, /admin/, /api-json/
-│  (Gunicorn)  │
-└─────────────┘
+   ┌──────────────┐
+   │  Django Web  │──── /health, /healthz, /admin/, /api/
+   │  (Gunicorn)  │
+   └──────────────┘
 ```
 
 **Key separation:** Canary task *implementations* (`canary/tasks/`) are pure functions that accept models, metrics, and a logger — no Django ORM dependency. The Celery task *wrappers* (`canary_tasks/tasks.py`) handle ORM queries, CarbonPoster instantiation, and batch posting. This separation is what enables the high test coverage on the core logic.
