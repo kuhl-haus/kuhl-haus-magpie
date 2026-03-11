@@ -1,4 +1,4 @@
-# AGENTS.md — kuhl-haus-magpie
+# CLAUDE.md — kuhl-haus-magpie
 
 > Instructions for AI agents assisting with code maintenance of this repository.
 
