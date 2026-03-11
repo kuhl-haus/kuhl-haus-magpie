@@ -39,14 +39,6 @@ def http_health_check(script_config_name: str = "http_health_check"):
     }
     try:
         endpoints = EndpointModel.objects.filter(health_check=True, ignore=False)
-    except ObjectDoesNotExist:
-        return {
-            "status": "failed",
-            "results": {
-                "message": f"EndpointModel not found in database"
-            }
-        }
-    try:
         carbon_poster: CarbonPoster = CarbonPoster(
             server_ip=script_config.carbon_server_ip,
             pickle_port=script_config.carbon_pickle_port,
@@ -55,14 +47,11 @@ def http_health_check(script_config_name: str = "http_health_check"):
         return {
             "status": "failed",
             "results": {
-                "message": f"Unhandled exception instantiating CarbonPoster: {e}"
+                "message": f"Unhandled exception during task setup: {e}"
             }
         }
     metrics: List[tuple] = []
     for ep in endpoints:
-        if ep.ignore:
-            logger.info(f"Skipping {ep.mnemonic}")
-            continue
         try:
             m: Metrics = Metrics(
                 name=script_config.application_name,
@@ -145,14 +134,6 @@ def tls_check(script_config_name: str = "tls_check"):
     }
     try:
         endpoints = EndpointModel.objects.filter(tls_check=True, ignore=False)
-    except ObjectDoesNotExist:
-        return {
-            "status": "failed",
-            "results": {
-                "message": f"EndpointModel not found in database"
-            }
-        }
-    try:
         carbon_poster: CarbonPoster = CarbonPoster(
             server_ip=script_config.carbon_server_ip,
             pickle_port=script_config.carbon_pickle_port,
@@ -161,14 +142,11 @@ def tls_check(script_config_name: str = "tls_check"):
         return {
             "status": "failed",
             "results": {
-                "message": f"Unhandled exception instantiating CarbonPoster: {e}"
+                "message": f"Unhandled exception during task setup: {e}"
             }
         }
     metrics: List[tuple] = []
     for ep in endpoints:
-        if ep.ignore:
-            logger.info(f"Skipping {ep.mnemonic}")
-            continue
         try:
             m: Metrics = Metrics(
                 name=script_config.application_name,
@@ -251,14 +229,6 @@ def dns_check(script_config_name: str = "dns_check"):
     }
     try:
         endpoints = EndpointModel.objects.filter(dns_check=True, ignore=False, dns_resolver_list__isnull=False)
-    except ObjectDoesNotExist:
-        return {
-            "status": "failed",
-            "results": {
-                "message": f"EndpointModel not found in database"
-            }
-        }
-    try:
         carbon_poster: CarbonPoster = CarbonPoster(
             server_ip=script_config.carbon_server_ip,
             pickle_port=script_config.carbon_pickle_port,
@@ -267,14 +237,11 @@ def dns_check(script_config_name: str = "dns_check"):
         return {
             "status": "failed",
             "results": {
-                "message": f"Unhandled exception instantiating CarbonPoster: {e}"
+                "message": f"Unhandled exception during task setup: {e}"
             }
         }
     metrics: List[tuple] = []
     for ep in endpoints:
-        if ep.ignore:
-            logger.info(f"Skipping {ep.mnemonic}")
-            continue
         try:
             m: Metrics = Metrics(
                 name=script_config.application_name,
