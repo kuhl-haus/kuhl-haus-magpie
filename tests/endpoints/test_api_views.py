@@ -38,7 +38,9 @@ def test_script_config_list_with_data(api_client):
 def test_endpoint_model_list_empty(api_client):
     response = api_client.get("/api/endpoints/")
     assert response.status_code == 200
-    assert response.data == []
+    data = response.json()
+    assert isinstance(data, list)
+    assert data == []
 
 
 @pytest.mark.django_db

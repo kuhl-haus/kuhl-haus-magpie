@@ -310,3 +310,26 @@ def test_query_dns_empty_resolvers(mock_endpoint, mock_metrics, mock_logger):
     # Assert
     mock_metrics.set_counter.assert_not_called()
     mock_logger.exception.assert_not_called()
+
+
+@patch('kuhl_haus.magpie.canary.tasks.dns_check.dns_query')
+def test_query_dns_single_resolver_coercion(mock_dns_query, mock_resolver_list_1, mock_endpoint, mock_metrics, mock_logger):
+    """Test that a single resolver object (not a list) is coerced to a list at line 17."""
+    # Return a single DnsResolver object (not wrapped in a list) to trigger coercion
+    single_resolver_list = MagicMock(spec=DnsResolverList)
+    single_resolver_list.resolvers = MagicMock()
+    single_resolver_list.resolvers.get = MagicMock(return_value=mock_resolver_list_1)
+
+    mock_response = MagicMock(spec=dns.message.Message)
+    mock_response.flags = 0
+    mock_response.rcode.return_value = dns.rcode.NOERROR
+    mock_response.to_text.return_value = "DNS Response"
+    mock_dns_query.return_value = mock_response
+
+    query_dns(single_resolver_list, mock_endpoint, mock_metrics, mock_logger)
+
+    # The coercion happened; dns_query should have been called with the single resolver
+    mock_dns_query.assert_called_once_with(
+        mock_resolver_list_1.ip_address, mock_endpoint.hostname, "A", use_tcp=False
+    )
+    assert mock_metrics.attributes['rcode'] == 'NOERROR'

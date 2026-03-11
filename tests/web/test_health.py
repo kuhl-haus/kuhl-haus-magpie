@@ -1,7 +1,9 @@
 """Tests for web/health.py health check endpoints."""
+import importlib
 import json
 
 import pytest
+from unittest.mock import patch
 from django.test import RequestFactory
 
 
@@ -67,3 +69,16 @@ def test_http_health_no_cache(rf):
     response = http_health(request)
     assert "no-cache" in response.get("Cache-Control", "").lower() or \
            response.status_code == 200
+
+
+def test_json_health_version_fallback(rf):
+    import kuhl_haus.magpie.web.health as health_module
+    # Patch at the source so the re-import during reload gets the mock
+    with patch("importlib.metadata.version", side_effect=Exception("not installed")):
+        importlib.reload(health_module)
+        request = rf.get("/healthz")
+        response = health_module.json_health(request)
+    data = json.loads(response.content)
+    assert data["version"] == "Unknown"
+    # Reload again to restore normal state
+    importlib.reload(health_module)

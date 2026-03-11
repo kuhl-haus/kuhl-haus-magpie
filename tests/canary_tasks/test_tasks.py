@@ -1,6 +1,6 @@
 """Tests for canary_tasks/tasks.py — Celery task wrappers."""
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, ANY
 
 from kuhl_haus.magpie.endpoints.models import (
     ScriptConfig,
@@ -113,6 +113,7 @@ def test_http_health_check_no_endpoints(script_config_http):
             result = http_health_check.run("http_health_check")
     assert result["status"] == "success"
     assert "No metrics" in result["results"]["message"]
+    mock_cp_class.return_value.post_metrics.assert_not_called()
 
 
 @pytest.mark.django_db
@@ -126,6 +127,7 @@ def test_http_health_check_with_endpoints(script_config_http, basic_endpoint):
     assert result["status"] == "success"
     assert "metadata" in result
     assert result["metadata"]["script_config"]["name"] == "http_health_check"
+    mock_check.assert_called_once_with(ep=basic_endpoint, metrics=ANY, logger=ANY)
 
 
 @pytest.mark.django_db
@@ -155,6 +157,7 @@ def test_http_health_check_skips_ignored_endpoints(script_config_http, db):
             result = http_health_check.run("http_health_check")
     # No endpoints (filter excludes ignore=True)
     assert result["status"] == "success"
+    mock_check.assert_not_called()
 
 
 # ---------------------------------------------------------------------------
@@ -190,6 +193,7 @@ def test_tls_check_with_endpoints(script_config_tls, basic_endpoint):
             result = tls_check.run("tls_check")
     assert result["status"] == "success"
     assert result["metadata"]["script_config"]["name"] == "tls_check"
+    mock_check.assert_called_once_with(ep=basic_endpoint, metrics=ANY, logger=ANY)
 
 
 @pytest.mark.django_db
@@ -236,6 +240,7 @@ def test_dns_check_with_endpoints(script_config_dns, dns_endpoint):
             result = dns_check.run("dns_check")
     assert result["status"] == "success"
     assert result["metadata"]["script_config"]["name"] == "dns_check"
+    mock_check.assert_called_once_with(resolvers=dns_endpoint.dns_resolver_list, ep=dns_endpoint, metrics=ANY, logger=ANY)
 
 
 @pytest.mark.django_db
@@ -278,3 +283,43 @@ def test_dns_check_metrics_exception_propagates(script_config_dns, dns_endpoint)
         with patch("kuhl_haus.magpie.canary_tasks.tasks.query_dns"):
             with pytest.raises(RuntimeError):
                 dns_check.run("dns_check")
+
+
+# ---------------------------------------------------------------------------
+# Per-endpoint exception handler tests (Task 2)
+# ---------------------------------------------------------------------------
+
+@pytest.mark.django_db
+def test_http_health_check_endpoint_exception_is_caught(script_config_http, basic_endpoint):
+    from kuhl_haus.magpie.canary_tasks.tasks import http_health_check
+    with patch("kuhl_haus.magpie.canary_tasks.tasks.invoke_health_check", side_effect=RuntimeError("boom")):
+        with patch("kuhl_haus.magpie.canary_tasks.tasks.CarbonPoster"):
+            with patch("kuhl_haus.magpie.canary_tasks.tasks.logger") as mock_logger:
+                result = http_health_check.run("http_health_check")
+    assert result["status"] == "success"
+    mock_logger.exception.assert_called_once()
+    assert "test-ep" in mock_logger.exception.call_args.kwargs["msg"]
+
+
+@pytest.mark.django_db
+def test_tls_check_endpoint_exception_is_caught(script_config_tls, basic_endpoint):
+    from kuhl_haus.magpie.canary_tasks.tasks import tls_check
+    with patch("kuhl_haus.magpie.canary_tasks.tasks.invoke_tls_check", side_effect=RuntimeError("boom")):
+        with patch("kuhl_haus.magpie.canary_tasks.tasks.CarbonPoster"):
+            with patch("kuhl_haus.magpie.canary_tasks.tasks.logger") as mock_logger:
+                result = tls_check.run("tls_check")
+    assert result["status"] == "success"
+    mock_logger.exception.assert_called_once()
+    assert "test-ep" in mock_logger.exception.call_args.kwargs["msg"]
+
+
+@pytest.mark.django_db
+def test_dns_check_endpoint_exception_is_caught(script_config_dns, dns_endpoint):
+    from kuhl_haus.magpie.canary_tasks.tasks import dns_check
+    with patch("kuhl_haus.magpie.canary_tasks.tasks.query_dns", side_effect=RuntimeError("boom")):
+        with patch("kuhl_haus.magpie.canary_tasks.tasks.CarbonPoster"):
+            with patch("kuhl_haus.magpie.canary_tasks.tasks.logger") as mock_logger:
+                result = dns_check.run("dns_check")
+    assert result["status"] == "success"
+    mock_logger.exception.assert_called_once()
+    assert "dns-ep" in mock_logger.exception.call_args.kwargs["msg"]

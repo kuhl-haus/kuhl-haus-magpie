@@ -85,6 +85,7 @@ omit = [
     "*/api.py",
     "*/migrations/*",
     "*/database/tests.py",
+    "*/database/management/commands/bootstrap.py",
 ]
 
 [tool.coverage.paths]
