@@ -78,6 +78,14 @@ includes = ["src/kuhl_haus"]
 [tool.coverage.run]
 branch = true
 source = ["kuhl_haus.magpie"]
+omit = [
+    "*/web/wsgi.py",
+    "*/web/asgi.py",
+    "*/manage.py",
+    "*/api.py",
+    "*/migrations/*",
+    "*/database/tests.py",
+]
 
 [tool.coverage.paths]
 source = ["src/", "*/site-packages/"]
