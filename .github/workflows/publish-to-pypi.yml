@@ -31,6 +31,14 @@ jobs:
         python-version: "3.12"
     - name: Install dependencies
       run: pip install -r requirements.txt
+    # Build Distribution Package
+    # IMPORTANT: pdm build must run BEFORE pdm install.
+    # pdm install regenerates pdm.lock (a tracked file), making the working tree dirty.
+    # pdm-backend appends +d<date> to the version when the tree is dirty, which
+    # causes PyPI to reject the upload (local version identifiers are not allowed).
+    - name: Build package
+      run: pdm build
+
     - name: Install package
       run: pdm install
 
@@ -49,10 +57,6 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
         slug: kuhl-haus/kuhl-haus-magpie
         fail_ci_if_error: true
-
-    # Build Distribution Package
-    - name: Build package
-      run: pdm build
     - name: Store the distribution packages
       uses: actions/upload-artifact@v4
       with:
