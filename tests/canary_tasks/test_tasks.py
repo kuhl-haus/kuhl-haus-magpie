@@ -137,7 +137,7 @@ def test_http_health_check_carbon_poster_instantiation_error(script_config_http)
     ):
         result = http_health_check.run("http_health_check")
     assert result["status"] == "failed"
-    assert "CarbonPoster" in result["results"]["message"]
+    assert "task setup" in result["results"]["message"]
 
 
 @pytest.mark.django_db
