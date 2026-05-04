@@ -14,6 +14,7 @@ def mock_metrics():
     """Fixture for a mock Metrics object."""
     metrics = MagicMock(spec=Metrics)
     metrics.attributes = {}
+    metrics.meta = {}
     metrics.set_counter = MagicMock()
     metrics.mnemonic = "test_mnemonic"
     metrics.version_to_float = MagicMock(return_value=1.0)
@@ -196,8 +197,11 @@ def test_invoke_health_check_json_response_success(mock_get, endpoint_model, moc
         call('requests', 1),
         call('responses', 1),
     ])
+
     assert mock_metrics.attributes['version'] == 1.0
     mock_metrics.version_to_int.assert_called_once_with("1.2.3")
+    assert endpoint_model.version_key in mock_metrics.meta
+    assert mock_metrics.meta[endpoint_model.version_key] == "1.2.3"
 
 
 @patch('kuhl_haus.magpie.canary.tasks.http_health_check.json.loads')
@@ -217,6 +221,8 @@ def test_handle_json_response_success(mock_json_loads, endpoint_model, mock_metr
     ])
     mock_metrics.version_to_int.assert_called_once_with("1.2.3")
     assert mock_metrics.attributes['version'] == 1.0
+    assert endpoint_model.version_key in mock_metrics.meta
+    assert mock_metrics.meta[endpoint_model.version_key] == "1.2.3"
 
 
 def test_handle_json_response_error_status(endpoint_model, mock_metrics):
@@ -234,6 +240,8 @@ def test_handle_json_response_error_status(endpoint_model, mock_metrics):
     ])
     mock_metrics.version_to_int.assert_called_once_with("1.2.3")
     assert mock_metrics.attributes['version'] == 1.0
+    assert endpoint_model.version_key in mock_metrics.meta
+    assert mock_metrics.meta[endpoint_model.version_key] == "1.2.3"
 
 
 def test_handle_json_response_missing_status(endpoint_model, mock_metrics):
@@ -251,6 +259,8 @@ def test_handle_json_response_missing_status(endpoint_model, mock_metrics):
     ])
     mock_metrics.version_to_int.assert_called_once_with("1.2.3")
     assert mock_metrics.attributes['version'] == 1.0
+    assert endpoint_model.version_key in mock_metrics.meta
+    assert mock_metrics.meta[endpoint_model.version_key] == "1.2.3"
 
 
 def test_handle_json_response_missing_version(endpoint_model, mock_metrics):

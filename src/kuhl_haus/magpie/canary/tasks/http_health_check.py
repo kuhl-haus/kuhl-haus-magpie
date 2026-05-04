@@ -56,6 +56,7 @@ def handle_json_response(response: Response, ep: EndpointModel, metrics: Metrics
         else:
             metrics.set_counter('errors', 1)
         if ep.version_key in json_response:
+            metrics.meta[ep.version_key] = json_response[ep.version_key]
             api_version = metrics.version_to_int(json_response[ep.version_key])
             metrics.attributes['version'] = api_version
     else:
