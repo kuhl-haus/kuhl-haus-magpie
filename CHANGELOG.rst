@@ -4,6 +4,14 @@ Changelog
 Version 0.5.9 (2026-05-04)
 ==========================
 
+- `ec081af <https://github.com/kuhl-haus/kuhl-haus-magpie/commit/ec081af>`_ feat: add update-changelog.sh script (#25)
+
+  Generates CHANGELOG.rst from git tags and commits. Ported from
+
+  kuhl-haus-mdp-app with credential-stripping fix for HTTPS remote URLs
+
+  (strips embedded tokens before building commit links).
+
 - `7ea2248 <https://github.com/kuhl-haus/kuhl-haus-magpie/commit/7ea2248>`_ Record API version in metrics.meta
 
   Store the raw version string from JSON responses into metrics.meta when the endpoint's version_key is present. This adds metrics.meta assignment in the HTTP health-check handler and updates tests to initialize metrics.meta and assert the version is saved there. Helps preserve the original version string for metadata/debugging while continuing to convert it to a numeric version for metrics.
