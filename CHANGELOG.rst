@@ -1,8 +1,24 @@
 =========
 Changelog
 =========
+Version 0.5.11 (2026-06-27)
+===========================
+
+- `a93a38d <https://github.com/kuhl-haus/kuhl-haus-magpie/commit/a93a38d>`_ Chore: bump codecov/codecov-action from v5.5.2 to v7 (#27)
+
+  v7 runs on Node 24, resolving the Node 20 deprecation warning and
+
+  the GPG signature verification failure seen in the v0.5.10 release
+
+  build.
+
+
 Version 0.5.10 (2026-06-27)
 ===========================
+
+- `01a73bf <https://github.com/kuhl-haus/kuhl-haus-magpie/commit/01a73bf>`_ Version 0.5.10 (2026-06-27)
+
+  Add CHANGELOG entry for v0.5.10 (2026-06-27). Documents a fix exposing the dns_resolver_list on EndpointModelSerializer (use SlugRelatedField with slug_field='name' so resolver lists are referenced by name) and notes added serializer tests covering read/write paths (resolver name present, null when absent, valid/invalid write cases) and an assertion that the field is present in the existing serializer field test. References commit a9e750d.
 
 - `a9e750d <https://github.com/kuhl-haus/kuhl-haus-magpie/commit/a9e750d>`_ Fix: expose dns_resolver_list in EndpointModel API (#26)
 
