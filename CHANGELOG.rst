@@ -1,9 +1,48 @@
 =========
 Changelog
 =========
+Version 0.5.10 (2026-06-27)
+===========================
+
+- `a9e750d <https://github.com/kuhl-haus/kuhl-haus-magpie/commit/a9e750d>`_ Fix: expose dns_resolver_list in EndpointModel API (#26)
+
+  * Fix: expose dns_resolver_list in EndpointModel API
+
+  The dns_resolver_list ForeignKey exists on EndpointModel but was
+
+  missing from EndpointModelSerializer, making it impossible to set
+
+  or read via the REST API.
+
+  Use SlugRelatedField with slug_field='name' so the resolver list
+
+  is referenced by name (e.g. "default") in API requests and
+
+  responses, consistent with the DnsResolverList model's natural
+
+  identifier.
+
+  * Test: add serializer tests for dns_resolver_list field
+
+  Cover the four cases Bishop identified:
+
+  - Read path: resolver list name appears as slug in serialized output
+
+  - Read path: null when no resolver list is assigned
+
+  - Write path: valid resolver list name deserializes to FK instance
+
+  - Write path: invalid resolver list name fails validation
+
+  Also assert dns_resolver_list is present (and null) in the existing
+
+  test_endpoint_model_serializer_fields test.
+
+
 Version 0.5.9 (2026-05-04)
 ==========================
 
+- `8367059 <https://github.com/kuhl-haus/kuhl-haus-magpie/commit/8367059>`_ Version 0.5.9 (2026-05-04)
 - `ec081af <https://github.com/kuhl-haus/kuhl-haus-magpie/commit/ec081af>`_ feat: add update-changelog.sh script (#25)
 
   Generates CHANGELOG.rst from git tags and commits. Ported from
