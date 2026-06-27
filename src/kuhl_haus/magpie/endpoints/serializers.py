@@ -33,6 +33,13 @@ class DnsResolverListSerializer(serializers.ModelSerializer):
 
 
 class EndpointModelSerializer(serializers.ModelSerializer):
+    dns_resolver_list = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=DnsResolverList.objects.all(),
+        required=False,
+        allow_null=True,
+    )
+
     class Meta:
         model = EndpointModel
         fields = [
@@ -44,4 +51,5 @@ class EndpointModelSerializer(serializers.ModelSerializer):
             'status_key', 'healthy_status', 'version_key',
             'connect_timeout', 'read_timeout',
             'ignore', 'tls_check', 'dns_check', 'health_check',
+            'dns_resolver_list',
         ]

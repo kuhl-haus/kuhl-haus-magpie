@@ -98,6 +98,48 @@ def test_endpoint_model_serializer_fields():
     assert data["health_check"] is True
     assert data["tls_check"] is True
     assert data["dns_check"] is True
+    assert data["dns_resolver_list"] is None
+
+
+@pytest.mark.django_db
+def test_endpoint_model_serializer_with_dns_resolver_list_expect_slug_in_output():
+    resolver_list = DnsResolverList.objects.create(name="default")
+    endpoint = EndpointModel.objects.create(
+        mnemonic="ep-dns",
+        hostname="example.com",
+        dns_resolver_list=resolver_list,
+    )
+    data = EndpointModelSerializer(endpoint).data
+    assert data["dns_resolver_list"] == "default"
+
+
+@pytest.mark.django_db
+def test_endpoint_model_serializer_with_no_dns_resolver_list_expect_null():
+    endpoint = EndpointModel.objects.create(
+        mnemonic="ep-no-dns",
+        hostname="example.com",
+    )
+    data = EndpointModelSerializer(endpoint).data
+    assert data["dns_resolver_list"] is None
+
+
+@pytest.mark.django_db
+def test_endpoint_model_serializer_with_valid_resolver_list_name_expect_deserializes():
+    DnsResolverList.objects.create(name="default")
+    serializer = EndpointModelSerializer(
+        data={"mnemonic": "ep", "hostname": "h.com", "dns_resolver_list": "default"}
+    )
+    assert serializer.is_valid(), serializer.errors
+    assert serializer.validated_data["dns_resolver_list"].name == "default"
+
+
+@pytest.mark.django_db
+def test_endpoint_model_serializer_with_invalid_resolver_list_name_expect_validation_error():
+    serializer = EndpointModelSerializer(
+        data={"mnemonic": "ep", "hostname": "h.com", "dns_resolver_list": "nonexistent"}
+    )
+    assert not serializer.is_valid()
+    assert "dns_resolver_list" in serializer.errors
 
 
 @pytest.mark.django_db
