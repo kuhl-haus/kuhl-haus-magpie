@@ -66,6 +66,34 @@ CSRF_TRUSTED_ORIGINS = [
     f"http://{MAGPIE_DOMAIN}",
 ]
 
+# Set MAGPIE_UNSAFE_SETTING_DISABLE_API_AUTH=True to restore the old,
+# fully-unauthenticated REST API behavior (every viewset in
+# endpoints/api_views.py previously had no permission_classes at all, so
+# DRF's own default of AllowAny applied to reads AND writes -- see #29).
+# Deliberately named "unsafe": the default (unset/False) requires a token
+# or session login for any write (POST/PUT/PATCH/DELETE) to /api/endpoints/,
+# /api/resolvers/, /api/resolver-lists/, /api/scripts/, matching the auth
+# already enforced on /admin/. Reads stay open by default either way
+# (IsAuthenticatedOrReadOnly) -- this only closes the write hole that #29
+# demonstrated live. This has no effect on drf_yasg's schema_view
+# (web/urls.py), which explicitly hardcodes permission_classes=[AllowAny]
+# for the API docs themselves, not the data.
+MAGPIE_UNSAFE_SETTING_DISABLE_API_AUTH = os.environ.get(
+    'MAGPIE_UNSAFE_SETTING_DISABLE_API_AUTH', 'False'
+) == 'True'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': (
+        ['rest_framework.permissions.AllowAny']
+        if MAGPIE_UNSAFE_SETTING_DISABLE_API_AUTH
+        else ['rest_framework.permissions.IsAuthenticatedOrReadOnly']
+    ),
+}
+
 # Application definition
 # https://unfoldadmin.com/docs/configuration/settings/
 INSTALLED_APPS = [
@@ -86,6 +114,7 @@ INSTALLED_APPS = [
     'kuhl_haus.magpie.database.apps.DatabaseConfig',
     'kuhl_haus.magpie.endpoints.apps.EndpointsConfig',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_celery_results',
     'django_celery_beat',
 ]
