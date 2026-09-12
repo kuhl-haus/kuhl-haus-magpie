@@ -41,6 +41,9 @@ kuhl-haus-magpie
 
 Magpie runs scheduled canary checks against your HTTP endpoints and reports results to Graphite for dashboarding and alerting. It provides a Django Admin interface for managing endpoints and a REST API for programmatic access.
 
+.. warning::
+   **Breaking change (PR #30):** the REST API (``/api/endpoints/``, ``/api/resolvers/``, ``/api/resolver-lists/``, ``/api/scripts/``) now requires authentication for write requests (``POST``/``PUT``/``PATCH``/``DELETE``) by default. Reads remain open. See the **API Authentication** section below, or set ``MAGPIE_UNSAFE_SETTING_DISABLE_API_AUTH=True`` to restore the old, fully-open behavior.
+
 What It Does
 ============
 
@@ -208,6 +211,26 @@ Application Settings
    * - ``DISABLE_HTTPS``
      - Disable HTTPS cookie/session settings
      - ``False``
+
+API Authentication
+-------------------
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 50 20
+
+   * - Variable
+     - Purpose
+     - Default
+   * - ``MAGPIE_UNSAFE_SETTING_DISABLE_API_AUTH``
+     - Restore the old, fully-open REST API behavior (no auth required for reads or writes). Deliberately named "unsafe" -- the default requires a token or session login for any write (``POST``/``PUT``/``PATCH``/``DELETE``) to ``/api/endpoints/``, ``/api/resolvers/``, ``/api/resolver-lists/``, ``/api/scripts/``. Reads stay open either way.
+     - ``False``
+
+By default, the REST API requires authentication for write requests. Obtain a token via the Django Admin (**Auth Token** section, once logged in as a superuser) or ``manage.py drf_create_token <username>``, then send it as ``Authorization: Token <token>``. The Swagger/ReDoc docs at ``/api/`` and ``/redoc/`` remain open regardless of this setting -- that's API documentation metadata, not data access.
+
+This adds a new database table (``rest_framework.authtoken``, needed to store tokens). The packaged Docker image's ``docker-entrypoint.sh`` runs the ``bootstrap`` management command on every start, which already calls ``migrate`` -- no extra step needed there. If you run Magpie a different way (bare ``manage.py``, a custom entrypoint/command override), run ``manage.py migrate`` yourself before creating or using any token; until then, token auth will fail even though the setting is on.
+
+Session-authenticated (browser) callers are subject to Django's normal CSRF protection on unsafe methods -- if you're driving the API from a browser session rather than a token, include the CSRF token/header or you'll see an unexpected ``403`` that isn't the auth check itself.
 
 Database
 --------

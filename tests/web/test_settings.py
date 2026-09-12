@@ -47,6 +47,47 @@ def test_settings_with_magpie_domain_and_disable_https(monkeypatch):
         importlib.reload(settings_module)
 
 
+def test_settings_with_unsafe_auth_unset_expect_auth_required(monkeypatch):
+    """Default (unset) MAGPIE_UNSAFE_SETTING_DISABLE_API_AUTH keeps
+    auth required (#29).
+    """
+    # Arrange
+    monkeypatch.delenv("MAGPIE_UNSAFE_SETTING_DISABLE_API_AUTH", raising=False)
+    import kuhl_haus.magpie.web.settings as settings_module
+    try:
+        # Act
+        importlib.reload(settings_module)
+
+        # Assert
+        assert settings_module.MAGPIE_UNSAFE_SETTING_DISABLE_API_AUTH is False
+        assert settings_module.REST_FRAMEWORK["DEFAULT_PERMISSION_CLASSES"] == [
+            "rest_framework.permissions.IsAuthenticatedOrReadOnly"
+        ]
+    finally:
+        importlib.reload(settings_module)
+
+
+def test_settings_with_unsafe_auth_enabled_expect_open_api(monkeypatch):
+    """MAGPIE_UNSAFE_SETTING_DISABLE_API_AUTH=True restores the old,
+    open behavior (#29).
+    """
+    # Arrange
+    monkeypatch.setenv("MAGPIE_UNSAFE_SETTING_DISABLE_API_AUTH", "True")
+    import kuhl_haus.magpie.web.settings as settings_module
+    try:
+        # Act
+        importlib.reload(settings_module)
+
+        # Assert
+        assert settings_module.MAGPIE_UNSAFE_SETTING_DISABLE_API_AUTH is True
+        assert settings_module.REST_FRAMEWORK["DEFAULT_PERMISSION_CLASSES"] == [
+            "rest_framework.permissions.AllowAny"
+        ]
+    finally:
+        monkeypatch.delenv("MAGPIE_UNSAFE_SETTING_DISABLE_API_AUTH")
+        importlib.reload(settings_module)
+
+
 def test_settings_postgres(monkeypatch):
     """Test that POSTGRES_HOST triggers the PostgreSQL DATABASES config."""
     monkeypatch.setenv("POSTGRES_HOST", "localhost")
