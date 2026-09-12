@@ -1,9 +1,226 @@
 =========
 Changelog
 =========
+Version 0.6.0 (2026-09-11)
+==========================
+
+- `3e51e00 <https://github.com/kuhl-haus/kuhl-haus-magpie/commit/3e51e00>`_ Require auth for REST API writes by default, with unsafe opt-out (#30)
+
+  * Require auth for REST API writes by default, with unsafe opt-out
+
+  Every viewset in endpoints/api_views.py (ScriptConfigViewSet,
+
+  EndpointModelViewSet, DnsResolverViewSet, DnsResolverListViewSet) had no
+
+  permission_classes set, and web/settings.py had no REST_FRAMEWORK block
+
+  at all -- DRF's own default (AllowAny) applied to writes as well as
+
+  reads. Confirmed live this session: an unauthenticated POST to
+
+  /api/endpoints/ succeeded with 201 and persisted, while /admin/ has
+
+  always been properly gated behind Django's session auth the whole time.
+
+  - web/settings.py: add 'rest_framework.authtoken' to INSTALLED_APPS (its
+
+  own bundled migrations, no new migration file needed; auto-registers
+
+  a TokenAdmin once installed). Add MAGPIE_UNSAFE_SETTING_DISABLE_API_AUTH
+
+  (env-backed, default False/unset) and a REST_FRAMEWORK block:
+
+  DEFAULT_AUTHENTICATION_CLASSES = [TokenAuthentication,
+
+  SessionAuthentication]; DEFAULT_PERMISSION_CLASSES =
+
+  [IsAuthenticatedOrReadOnly] by default, or [AllowAny] if the unsafe
+
+  flag is set. IsAuthenticatedOrReadOnly (not full IsAuthenticated) is
+
+  deliberate: matches the reported issue's own wording ("at least write
+
+  operations"), leaves reads open by default, and needed zero changes
+
+  to any pre-existing test (all of them are unauthenticated GETs).
+
+  drf_yasg's schema_view (web/urls.py) already explicitly hardcodes
+
+  permission_classes=[AllowAny] on itself for the Swagger/ReDoc docs --
+
+  confirmed unaffected, untouched.
+
+  - tests/endpoints/test_api_views.py: 4 new tests covering unauthenticated
+
+  write rejected by default, unauthenticated read still allowed,
+
+  token-authenticated write succeeds, and the unsafe flag restoring the
+
+  old open behavior. These monkeypatch EndpointModelViewSet's
+
+  authentication_classes/permission_classes directly rather than using
+
+  override_settings(REST_FRAMEWORK=...): DRF's APIView.permission_classes
+
+  is a class attribute snapshotted once from api_settings at class-body-
+
+  execution/import time, so override_settings doesn't retroactively
+
+  affect an already-imported ViewSet class -- confirmed by testing it
+
+  both ways. Monkeypatching the class attribute directly also matches
+
+  production reality more closely, since MAGPIE_UNSAFE_SETTING_DISABLE_API_AUTH
+
+  is a deploy-time-only toggle that requires an actual process restart.
+
+  - tests/web/test_settings.py: 2 new tests confirming the settings.py
+
+  module-level env-var-to-REST_FRAMEWORK-dict logic itself is correct,
+
+  following the file's existing monkeypatch+importlib.reload pattern.
+
+  Verified: full suite 217/217 passing (isolated venv -- this host's
+
+  global python3 has an unrelated, pre-existing kuhl_haus namespace
+
+  collision from a local legion-mcp checkout that shadows kuhl_haus.magpie
+
+  there; worked around rather than touched). flake8 clean on every line
+
+  this change added or touched (pre-existing violations on untouched
+
+  lines left alone, confirmed via diff-line-number intersection).
+
+  Mutation-tested: simulating the old bug reaching the viewset (AllowAny
+
+  instead of IsAuthenticatedOrReadOnly) fails the unauthenticated-write
+
+  test with the exact 201-instead-of-401/403 signature the original bug
+
+  produced.
+
+  Operator impact: anyone currently depending on the old fully-open
+
+  behavior (including a direct unauthenticated POST used earlier this
+
+  session to register a monitored endpoint) will need either a DRF token
+
+  (via /admin/'s now-available Token model, or manage.py drf_create_token
+
+  <username>) or must explicitly set
+
+  MAGPIE_UNSAFE_SETTING_DISABLE_API_AUTH=True once this ships.
+
+  refs #29
+
+  * Document MAGPIE_UNSAFE_SETTING_DISABLE_API_AUTH + breaking-change banner
+
+  Adds a warning banner near the top of the README (RST admonition,
+
+  verified it renders cleanly via docutils) calling out that REST API
+
+  writes now require authentication by default, and a new API
+
+  Authentication configuration table documenting
+
+  MAGPIE_UNSAFE_SETTING_DISABLE_API_AUTH alongside how to obtain a token
+
+  (Django Admin's Auth Token section, or manage.py drf_create_token).
+
+  refs #29
+
+  * Address review: real-settings tests, naming/AAA, migration + CSRF notes
+
+  Per Bishop's review on PR #30 (pullrequestreview-5184370616):
+
+  - tests/endpoints/test_api_views.py: removed the monkeypatch from three
+
+  of the four new tests -- they now run against the real branch settings
+
+  the test process already booted with, which is what actually proves
+
+  the fix works rather than re-proving DRF enforces whatever permission
+
+  class it's handed. Parametrized the unauthenticated-write test across
+
+  all four viewsets (/api/endpoints/, /api/resolvers/, /api/resolver-lists/,
+
+  /api/scripts/) in one test function instead of covering only
+
+  EndpointModel. The unsafe-setting test keeps the monkeypatch, since
+
+  exercising both the safe default and the unsafe opt-out in one pytest
+
+  run means one of them can't come from the real settings.py the process
+
+  started with -- now with a comment explaining it's the only one that
+
+  needs it and why.
+
+  - Renamed all six new/touched tests to the
+
+  test_<SUT>_with_<scenario>_expect_<outcome> convention from
+
+  Memory/Unit-Testing-Standards.md, and added explicit Arrange/Act/Assert
+
+  comments (Act is a single statement in every case).
+
+  - README.rst: added a migration note (the packaged Docker image's
+
+  bootstrap step already runs "migrate", checked directly against
+
+  docker-entrypoint.sh, bootstrap.py, and the K8s deploy manifest -- no
+
+  command override there -- but anyone running Magpie a different way
+
+  needs to run it manually before token auth works) and a one-line CSRF
+
+  note for session-authenticated browser callers.
+
+  Re-verified after the rewrite: full suite 220/220, flake8 clean on every
+
+  line touched. Mutation-tested the corrected tests two ways: (1) reverting
+
+  settings.py's safe default to AllowAny now fails all four parametrized
+
+  cases (previously, with the monkeypatch, it failed none); (2) simulating
+
+  Bishop's exact reported gap -- one viewset (EndpointModelViewSet) opting
+
+  back out with its own permission_classes = [AllowAny] -- now fails only
+
+  that one parametrized case while the other three correctly stay green,
+
+  proving the fix and its test actually apply globally, not just to the
+
+  one viewset the old test happened to check directly.
+
+  Caught one thing myself while redoing the mutation tests: my test venv's
+
+  first "pip install -e" had silently resolved to a static site-packages
+
+  copy instead of a true editable link, so my original settings.py/
+
+  api_views.py mutation attempts were silently no-ops against stale copied
+
+  files (test files under tests/ were unaffected, since pytest reads those
+
+  from the repo directly). Caught it by checking module.__file__ against
+
+  the repo path, fixed with --force-reinstall, and redid both mutation
+
+  tests against the corrected, truly-live install before trusting the
+
+  result.
+
+  refs #29
+
+
 Version 0.5.11 (2026-06-27)
 ===========================
 
+- `e134468 <https://github.com/kuhl-haus/kuhl-haus-magpie/commit/e134468>`_ Version 0.5.11 (2026-06-27)
 - `a93a38d <https://github.com/kuhl-haus/kuhl-haus-magpie/commit/a93a38d>`_ Chore: bump codecov/codecov-action from v5.5.2 to v7 (#27)
 
   v7 runs on Node 24, resolving the Node 20 deprecation warning and
