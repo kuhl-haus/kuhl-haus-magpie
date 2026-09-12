@@ -228,6 +228,10 @@ API Authentication
 
 By default, the REST API requires authentication for write requests. Obtain a token via the Django Admin (**Auth Token** section, once logged in as a superuser) or ``manage.py drf_create_token <username>``, then send it as ``Authorization: Token <token>``. The Swagger/ReDoc docs at ``/api/`` and ``/redoc/`` remain open regardless of this setting -- that's API documentation metadata, not data access.
 
+This adds a new database table (``rest_framework.authtoken``, needed to store tokens). The packaged Docker image's ``docker-entrypoint.sh`` runs the ``bootstrap`` management command on every start, which already calls ``migrate`` -- no extra step needed there. If you run Magpie a different way (bare ``manage.py``, a custom entrypoint/command override), run ``manage.py migrate`` yourself before creating or using any token; until then, token auth will fail even though the setting is on.
+
+Session-authenticated (browser) callers are subject to Django's normal CSRF protection on unsafe methods -- if you're driving the API from a browser session rather than a token, include the CSRF token/header or you'll see an unexpected ``403`` that isn't the auth check itself.
+
 Database
 --------
 
