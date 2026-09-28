@@ -11,6 +11,7 @@ class ScriptConfigSerializer(serializers.ModelSerializer):
     class Meta:
         model = ScriptConfig
         fields = [
+            'id',
             'name', 'application_name', 'log_level',
             'carbon_metrics_enabled',
             'carbon_server_ip', 'carbon_pickle_port',
@@ -21,7 +22,7 @@ class ScriptConfigSerializer(serializers.ModelSerializer):
 class DnsResolverSerializer(serializers.ModelSerializer):
     class Meta:
         model = DnsResolver
-        fields = ['name', 'ip_address']
+        fields = ['id', 'name', 'ip_address']
 
 
 class DnsResolverListSerializer(serializers.ModelSerializer):
@@ -29,7 +30,7 @@ class DnsResolverListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DnsResolverList
-        fields = ['name', 'resolvers']
+        fields = ['id', 'name', 'resolvers']
 
 
 class EndpointModelSerializer(serializers.ModelSerializer):
@@ -43,6 +44,7 @@ class EndpointModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = EndpointModel
         fields = [
+            'id',
             'mnemonic', 'environment',
             'hostname', 'scheme', 'port',
             'path', 'query', 'fragment',
