@@ -142,6 +142,50 @@ def test_endpoint_model_serializer_with_invalid_resolver_list_name_expect_valida
     assert "dns_resolver_list" in serializer.errors
 
 
+# Regression tests for #31: create/list responses never exposed the id
+# needed to address a resource afterward via GET/PUT/PATCH/DELETE.
+@pytest.mark.django_db
+def test_script_config_serializer_with_saved_instance_expect_id_in_data():
+    # Arrange
+    obj = ScriptConfig.objects.create(name="exposes-id-check")
+    # Act
+    data = ScriptConfigSerializer(obj).data
+    # Assert
+    assert data["id"] == obj.id
+
+
+@pytest.mark.django_db
+def test_dns_resolver_serializer_with_saved_instance_expect_id_in_data():
+    # Arrange
+    obj = DnsResolver.objects.create(name="exposes-id-check", ip_address="9.9.9.9")
+    # Act
+    data = DnsResolverSerializer(obj).data
+    # Assert
+    assert data["id"] == obj.id
+
+
+@pytest.mark.django_db
+def test_dns_resolver_list_serializer_with_saved_instance_expect_id_in_data():
+    # Arrange
+    obj = DnsResolverList.objects.create(name="exposes-id-check")
+    # Act
+    data = DnsResolverListSerializer(obj).data
+    # Assert
+    assert data["id"] == obj.id
+
+
+@pytest.mark.django_db
+def test_endpoint_model_serializer_with_saved_instance_expect_id_in_data():
+    # Arrange
+    obj = EndpointModel.objects.create(
+        mnemonic="exposes-id-check", hostname="h.example.com"
+    )
+    # Act
+    data = EndpointModelSerializer(obj).data
+    # Assert
+    assert data["id"] == obj.id
+
+
 @pytest.mark.django_db
 def test_endpoint_model_serializer_list():
     EndpointModel.objects.create(
