@@ -1,8 +1,62 @@
 =========
 Changelog
 =========
+Version 0.6.1 (2026-09-27)
+==========================
+
+- `6e57dbb <https://github.com/kuhl-haus/kuhl-haus-magpie/commit/6e57dbb>`_ Fix: expose id in endpoint/resolver/script API serializers (#32)
+
+  * Test: add failing regression tests for missing id in serializers (#31)
+
+  EndpointModelSerializer, DnsResolverSerializer, DnsResolverListSerializer
+
+  and ScriptConfigSerializer never included the model's primary key, so
+
+  create/list responses had no supported way to address the resource
+
+  afterward via GET/PUT/PATCH/DELETE.
+
+  One test per serializer, asserting data["id"] == obj.id against a real
+
+  saved instance -- no mocking, no patching, the actual unmodified
+
+  serializer classes against the actual Django ORM. All four fail with
+
+  KeyError: 'id' at tests/endpoints/test_serializers.py:154, 164, 174, 186
+
+  against this commit. Fix follows in the next commit.
+
+  * Fix: expose id in endpoint/resolver/script API serializers (#31)
+
+  Adds 'id' to the fields list on all four serializers named in the
+
+  previous commit's tests. DRF's ModelSerializer treats the primary key as
+
+  read-only by default once it's in fields, so this is purely additive --
+
+  an extra field in every response, nothing removed, renamed, or made
+
+  required on write.
+
+  DnsResolverSerializer is also nested inside DnsResolverListSerializer, so
+
+  this incidentally exposes ids for individual resolvers within a
+
+  resolver-list response too, consistent with the issue's intent that every
+
+  one of these needs to be independently addressable.
+
+  All four tests from the previous commit now pass. Full suite: 224 passed.
+
+
 Version 0.6.0 (2026-09-11)
 ==========================
+
+- `9df1c3a <https://github.com/kuhl-haus/kuhl-haus-magpie/commit/9df1c3a>`_ Version 0.6.0 (2026-09-11)
+
+  Require auth for REST API writes by default, with unsafe opt-out.
+
+  Resolves: https://github.com/kuhl-haus/kuhl-haus-magpie/issues/29
 
 - `3e51e00 <https://github.com/kuhl-haus/kuhl-haus-magpie/commit/3e51e00>`_ Require auth for REST API writes by default, with unsafe opt-out (#30)
 
