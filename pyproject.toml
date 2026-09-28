@@ -19,6 +19,7 @@ dynamic = ["version"]
 dependencies = [
     "celery",
     "Django",
+    "django-unfold",
     "djangorestframework",
     "django-celery-beat",
     "django-celery-results",
@@ -50,6 +51,7 @@ testing = [
     "pdm-backend",
     "pytest",
     "pytest-cov",
+    "pytest-django",
 ]
 
 # [project.scripts]
